@@ -4,7 +4,10 @@ PyMagic9 - a library that uses frames to analyze a call stack
 import dis
 import sys
 
-from opcode import haslocal, hasconst, hasname, hasjrel, hascompare, hasfree, cmp_op, opmap
+if sys.version_info < (3,):
+    # noinspection PyUnresolvedReferences
+    from future_builtins import ascii
+from opcode import haslocal, hasconst, hasname, hasjrel, hascompare, hasfree, cmp_op, opmap, EXTENDED_ARG, HAVE_ARGUMENT
 from types import CodeType, FunctionType
 
 # noinspection SpellCheckingInspection
@@ -90,7 +93,12 @@ def nameof(obj):
 
     for line in dis.findlinestarts(f_code):
         if f_lineno == line[1]:
-            return _get_last_name(f_code.co_code[line[0]:frame.f_lasti], f_code)
+            if sys.version_info >= (3,):
+                return _get_last_name(f_code.co_code[line[0]:frame.f_lasti], f_code)
+
+            ba = bytearray(f_code.co_code)[line[0]:frame.f_lasti]
+            del ba[::-3]
+            return _get_last_name(ba, f_code)
 
 
 # noinspection SpellCheckingInspection
@@ -124,7 +132,7 @@ def _get_argval(offset, op, arg, varnames=None, names=None, constants=None, cell
 def _get_last_name(code, f_code):
     arg, offset, op = None, None, None
     # noinspection PyProtectedMember
-    for offset, op, arg in dis._unpack_opargs(code):
+    for offset, op, arg in _unpack_opargs(code):
         pass
 
     if arg is None:
@@ -138,3 +146,19 @@ def _get_last_name(code, f_code):
                            f_code.co_cellvars + f_code.co_freevars)
 
     return f_code.co_names[arg]
+
+
+# noinspection SpellCheckingInspection
+def _unpack_opargs(code):
+    """dis._unpack_opargs function clone from py39 (to support earlier versions of python)
+
+    """
+    extended_arg = 0
+    for i in range(0, len(code), 2):
+        op = code[i]
+        if op >= HAVE_ARGUMENT:
+            arg = code[i + 1] | extended_arg
+            extended_arg = (arg << 8) if op == EXTENDED_ARG else 0
+        else:
+            arg = None
+        yield i, op, arg
