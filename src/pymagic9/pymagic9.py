@@ -1,5 +1,6 @@
 """
-PyMagic9 - a library that uses frames to analyze a call stack
+PyMagic9 - a library that uses frames to analyze a call stack.
+
 """
 import dis
 import sys
@@ -60,7 +61,7 @@ def isfunctionincallchain(o, __depth=-1):
     :return: True or False
     """
     if not isinstance(o, (CodeType, FunctionType)):
-        raise TypeError('\'obj\' must be code or function')
+        raise TypeError('\'o\' must be code or function')
 
     code = o if not hasattr(o, "__code__") else o.__code__
     frame = getframe(1)
@@ -75,17 +76,18 @@ def isfunctionincallchain(o, __depth=-1):
 
 
 # noinspection SpellCheckingInspection,PyUnusedLocal
-def nameof(obj):
-    """A function that correctly determines the name of an object,
+def nameof(o):
+    """A function that correctly determines the 'name' of an object,
     without being tied to the object itself, for example:
 
     >>> var1 = [1,2]
     >>> var2 = var1
     >>> print(nameof(var1))
-        var1
+    var1
     >>> print(nameof(var2))
-        var2
-    :param obj: any object
+    var2
+
+    :param o: any object
     :return: name of object
     """
     frame = getframe(1)
@@ -150,7 +152,7 @@ def _get_last_name(code, f_code):
 
 # noinspection SpellCheckingInspection
 def _unpack_opargs(code):
-    """dis._unpack_opargs function clone from py39 (to support earlier versions of python)
+    """dis._unpack_opargs function clone from py39 (to support earlier versions of python).
 
     """
     extended_arg = 0
