@@ -36,7 +36,7 @@ def test__getframe_valid(__depth):
     assert result is expected
 
 
-# noinspection SpellCheckingInspection
+# noinspection SpellCheckingInspection,PyUnresolvedReferences
 @pytest.mark.parametrize("__depth",
                          [
                              (),
@@ -50,7 +50,7 @@ def test__getframe_invalid(__depth):
     """
     if isinstance(__depth, int):
         with pytest.raises(ValueError, match=r"call stack is not deep enough"):
-            pm.getframe(__depth)
+            pm._getframe(__depth)
     else:
         match = ""
 
@@ -61,7 +61,7 @@ def test__getframe_invalid(__depth):
 
         with pytest.raises(TypeError, match=match):
             # noinspection PyTypeChecker
-            pm.getframe(__depth)
+            pm._getframe(__depth)
 
 
 # noinspection SpellCheckingInspection
@@ -94,7 +94,7 @@ def test_isfunctionincallchain_invalid():
 def test_nameof(name):
     locals().setdefault(name, None)
     pm_ = pm
-    exec ("result = pm_.nameof(%s) if hasattr(pm_, 'nameof') else None" % name, locals())
+    exec("result = pm_.nameof(%s) if hasattr(pm_, 'nameof') else None" % name, locals())
     del pm_
 
     assert locals()['result'] == name
