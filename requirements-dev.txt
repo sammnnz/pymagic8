@@ -1,0 +1,8 @@
+flake8==3.9.2
+tox==3.24.3
+six==1.14.0
+pytest==6.2.5
+pytest-cov==2.12.1
+mypy===0.910
+coverage==5.2.1
+codecov==2.1.13
