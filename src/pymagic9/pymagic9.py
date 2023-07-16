@@ -1,6 +1,5 @@
 """
 PyMagic9 - a library that uses frames to analyze a call stack.
-
 """
 import dis
 import sys
@@ -98,9 +97,9 @@ def nameof(o):
             if sys.version_info >= (3,):
                 return _get_last_name(f_code.co_code[line[0]:frame.f_lasti], f_code)
 
-            ba = bytearray(f_code.co_code)[line[0]:frame.f_lasti]
-            del ba[::-3]
-            return _get_last_name(ba, f_code)
+            _ = bytearray(f_code.co_code)[line[0]:frame.f_lasti]
+            del _[::-3]
+            return _get_last_name(_, f_code)
 
 
 # noinspection SpellCheckingInspection
@@ -125,13 +124,17 @@ def _get_argval(offset, op, arg, varnames=None, names=None, constants=None, cell
             argval = cmp_op[arg]
         elif op in hasfree:
             argval = cells[arg]
-        elif op == opmap['FORMAT_VALUE']:
+        elif op == opmap.get('FORMAT_VALUE'):
             argval = ((None, str, repr, ascii)[arg & 0x3], bool(arg & 0x4))
 
     return argval
 
 
 def _get_last_name(code, f_code):
+    """
+    Return name that matches the last arg.
+
+    """
     arg, offset, op = None, None, None
     # noinspection PyProtectedMember
     for offset, op, arg in _unpack_opargs(code):
