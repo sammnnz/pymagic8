@@ -23,7 +23,10 @@ def _getframe(__depth=0):
     """
 
     if not isinstance(__depth, int):
-        raise TypeError('an integer is required (got type %s)' % type(__depth))
+        if sys.version_info >= (3, 5):
+            raise TypeError('an integer is required (got type %s)' % type(__depth))
+        elif sys.version_info == (2, 7):
+            raise TypeError('an integer is required')
 
     try:
         raise TypeError
