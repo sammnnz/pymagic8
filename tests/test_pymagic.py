@@ -56,7 +56,7 @@ def test__getframe_invalid(__depth):
 
         if sys.version_info >= (3, 5):
             match = r"(an integer is required \(got type (.*))"
-        elif sys.version_info == (2, 7):
+        elif sys.version_info < (3, ):
             match = "an integer is required"
 
         with pytest.raises(TypeError, match=match):
