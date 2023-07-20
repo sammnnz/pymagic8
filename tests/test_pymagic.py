@@ -102,7 +102,7 @@ def test_nameof(name):
 
 # noinspection SpellCheckingInspection,PyUnresolvedReferences
 def test__get_argval():
-    max_count = 3
+    max_count = 8
     for _, o in globals().items():
         if not max_count:
             break
@@ -124,9 +124,8 @@ def test__get_argval():
                                             varnames, names, constants, cells)
                     assert result == i.argval
             else:
-                _ = bytearray(code)
-                del _[::-3]
-                for offset, op, arg in pm._unpack_opargs(_):
+                bytea = bytearray(code)
+                for offset, op, arg in pm._unpack_opargs(bytea):
                     pm._get_argval(offset, op, arg,
                                    varnames, names, constants, cells)
                     assert True
