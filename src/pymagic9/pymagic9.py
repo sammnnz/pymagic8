@@ -7,7 +7,8 @@ import sys
 if sys.version_info < (3,):
     # noinspection PyUnresolvedReferences
     from future_builtins import ascii
-from opcode import haslocal, hasconst, hasname, hasjrel, hascompare, hasfree, cmp_op, opmap, EXTENDED_ARG, HAVE_ARGUMENT
+from opcode import haslocal, hasconst, hasname, hasjrel, hasjabs, hascompare, hasfree, cmp_op, opmap, EXTENDED_ARG, \
+    HAVE_ARGUMENT
 from types import CodeType, FunctionType
 
 # noinspection SpellCheckingInspection
@@ -121,8 +122,11 @@ def _get_argval(offset, op, arg, varnames=None, names=None, constants=None, cell
             argval = constants[arg]
         elif op in hasname:
             argval = names[arg]
+        elif op in hasjabs:
+            if sys.version_info >= (3, 10):
+                argval = arg * 2
         elif op in hasjrel:
-            argval = offset + 2 + arg
+            argval = offset + 2 + arg if sys.version_info < (3, 10) else offset + 2 + arg*2
         elif op in hascompare:
             argval = cmp_op[arg]
         elif op in hasfree:
