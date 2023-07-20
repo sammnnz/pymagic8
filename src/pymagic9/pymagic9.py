@@ -101,8 +101,7 @@ def nameof(o):
             if sys.version_info >= (3,):
                 return _get_last_name(f_code.co_code[line[0]:frame.f_lasti], f_code)
 
-            bytea = bytearray(f_code.co_code)[line[0]:frame.f_lasti]
-            del bytea[::-3]
+            bytea = bytearray(f_code.co_code)[line[0]:frame.f_lasti]; del bytea[::-3]
             return _get_last_name(bytea, f_code)
 
 
