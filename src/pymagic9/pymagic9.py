@@ -34,15 +34,16 @@ def _getframe(__depth=0):
     except TypeError:
         tb = sys.exc_info()[2]
 
+    if tb is None: return None  # noqa E702
+
     frame = tb.tb_frame.f_back
     del tb
 
-    if __depth < 0:
-        return frame
+    if __depth < 0: return frame  # noqa E702
 
     try:
         while __depth:  # while i and frame: to disable the exception
-            frame = frame.f_back
+            frame = frame.f_back  # type: ignore #noqa
             __depth -= 1
     except AttributeError:
         raise ValueError('call stack is not deep enough')
@@ -66,7 +67,7 @@ def isfunctionincallchain(o, __depth=-1):
     if not isinstance(o, (CodeType, FunctionType)):
         raise TypeError('\'o\' must be code or function')
 
-    code = o if not hasattr(o, "__code__") else o.__code__
+    code = o if not hasattr(o, "__code__") else o.__code__  # type: ignore
     frame = getframe(1)
     while frame and __depth:
         if frame.f_code is code:
@@ -101,7 +102,7 @@ def nameof(o):
             if sys.version_info >= (3,):
                 return _get_last_name(f_code.co_code[line[0]:frame.f_lasti], f_code)
 
-            bytea = bytearray(f_code.co_code)[line[0]:frame.f_lasti]; del bytea[::-3]  # noqa E702
+            bytea = bytearray(f_code.co_code)[line[0]:frame.f_lasti]; del bytea[::-3]  # type: ignore # noqa E702
             return _get_last_name(bytea, f_code)
 
 
@@ -137,8 +138,7 @@ def _get_argval(offset, op, arg, varnames=None, names=None, constants=None, cell
 
 
 def _get_last_name(code, f_code):
-    """
-    Return name that matches the last arg.
+    """Return name that matches the last arg.
 
     """
     arg, offset, op = None, None, None
