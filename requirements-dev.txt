@@ -1,0 +1,5 @@
+six==1.13.0
+pytest==4.6.11; python_version<"3.10"
+pytest==7.4.0; python_version>="3.10"
+pytest-cov==2.8.1
+coverage==5.2.1

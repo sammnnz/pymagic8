@@ -1,6 +1,5 @@
 """
 PyMagic9 - a library that uses frames to analyze a call stack.
-
 """
 import dis
 import sys
@@ -8,7 +7,8 @@ import sys
 if sys.version_info < (3,):
     # noinspection PyUnresolvedReferences
     from future_builtins import ascii
-from opcode import haslocal, hasconst, hasname, hasjrel, hascompare, hasfree, cmp_op, opmap, EXTENDED_ARG, HAVE_ARGUMENT
+from opcode import haslocal, hasconst, hasname, hasjrel, hasjabs, hascompare, hasfree, cmp_op, opmap, EXTENDED_ARG, \
+    HAVE_ARGUMENT
 from types import CodeType, FunctionType
 
 # noinspection SpellCheckingInspection
@@ -24,22 +24,26 @@ def _getframe(__depth=0):
     """
 
     if not isinstance(__depth, int):
-        raise TypeError('an integer is required (got type %s)' % type(__depth))
+        if sys.version_info >= (3, 5):
+            raise TypeError('an integer is required (got type %s)' % type(__depth))
+        elif sys.version_info < (3, ):
+            raise TypeError('an integer is required')
 
     try:
         raise TypeError
     except TypeError:
         tb = sys.exc_info()[2]
 
+    if tb is None: return None  # noqa E702
+
     frame = tb.tb_frame.f_back
     del tb
 
-    if __depth < 0:
-        return frame
+    if __depth < 0: return frame  # noqa E702
 
     try:
         while __depth:  # while i and frame: to disable the exception
-            frame = frame.f_back
+            frame = frame.f_back  # type: ignore #noqa
             __depth -= 1
     except AttributeError:
         raise ValueError('call stack is not deep enough')
@@ -63,7 +67,7 @@ def isfunctionincallchain(o, __depth=-1):
     if not isinstance(o, (CodeType, FunctionType)):
         raise TypeError('\'o\' must be code or function')
 
-    code = o if not hasattr(o, "__code__") else o.__code__
+    code = o if not hasattr(o, "__code__") else o.__code__  # type: ignore
     frame = getframe(1)
     while frame and __depth:
         if frame.f_code is code:
@@ -98,9 +102,8 @@ def nameof(o):
             if sys.version_info >= (3,):
                 return _get_last_name(f_code.co_code[line[0]:frame.f_lasti], f_code)
 
-            ba = bytearray(f_code.co_code)[line[0]:frame.f_lasti]
-            del ba[::-3]
-            return _get_last_name(ba, f_code)
+            bytea = bytearray(f_code.co_code)[line[0]:frame.f_lasti]; del bytea[::-3]  # type: ignore # noqa E702
+            return _get_last_name(bytea, f_code)
 
 
 # noinspection SpellCheckingInspection
@@ -119,19 +122,25 @@ def _get_argval(offset, op, arg, varnames=None, names=None, constants=None, cell
             argval = constants[arg]
         elif op in hasname:
             argval = names[arg]
+        elif op in hasjabs:
+            if sys.version_info >= (3, 10):
+                argval = arg * 2
         elif op in hasjrel:
-            argval = offset + 2 + arg
+            argval = offset + 2 + arg if sys.version_info < (3, 10) else offset + 2 + arg*2
         elif op in hascompare:
             argval = cmp_op[arg]
         elif op in hasfree:
             argval = cells[arg]
-        elif op == opmap['FORMAT_VALUE']:
+        elif op == opmap.get('FORMAT_VALUE'):
             argval = ((None, str, repr, ascii)[arg & 0x3], bool(arg & 0x4))
 
     return argval
 
 
 def _get_last_name(code, f_code):
+    """Return name that matches the last arg.
+
+    """
     arg, offset, op = None, None, None
     # noinspection PyProtectedMember
     for offset, op, arg in _unpack_opargs(code):
