@@ -31,9 +31,13 @@ jobs:
         # If use here 'run: tox', then tox no watching tox-envs
         run: "python -m tox"
       - name: Upload coverage to Codecov
+        if: ${{ matrix.os == 'windows-latest' && matrix.python-version == '3.10' }}
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
+          file: ./coverage.xml
           flags: unittests
           verbose: true
+          # https://docs.codecov.com/docs/commit-status#disabling-a-status
+          patch: off
