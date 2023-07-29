@@ -1,5 +1,5 @@
 """
-PyMagic9 - a library that uses frames to analyze a call stack.
+PyMagic9 - a library for analyzing call stacks using frames.
 """
 from .pymagic9 import getframe, isfunctionincallchain, nameof
 

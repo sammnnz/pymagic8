@@ -1,5 +1,5 @@
 """
-PyMagic9 - a library that uses frames to analyze a call stack.
+This module provides functions for analyzing call stacks such as `nameof`, `isfunctionincallchain`, etc.
 """
 import dis
 import sys
