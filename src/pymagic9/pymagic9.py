@@ -17,10 +17,39 @@ __all__ = ["getframe", "isfunctionincallchain", "nameof"]
 
 # noinspection SpellCheckingInspection
 def _getframe(__depth=0):
-    """Polyfill for built-in sys._getframe.
+    """
+    Polyfill for the built-in sys._getframe function.
 
-    :param __depth: deep of stack
-    :return: Frame or None when __depth's frame in the top of stack.
+    Args:
+        __depth (int, optional): The depth of the call stack to traverse. A value of 0 represents the current frame,
+                       1 represents the caller's frame, and so on.
+
+    Returns:
+        FrameType or None: The frame object at the specified depth in the call stack, or None if the depth is
+                             out of range.
+
+    Raises:
+        TypeError: If the depth argument is not an integer.
+        ValueError: If call stack is not deep enough.
+
+    This function provides a polyfill for the built-in `sys._getframe` function, which is used to access the call stack
+    frames. It allows you to retrieve the frame object at a specific depth in the call stack.
+
+    The depth argument specifies the number of frames to traverse. A value of 0 or less 0 represents the current frame,
+    1 represents the caller's frame, and so on. If the depth is negative, it will traverse the frames in the opposite
+    direction.
+
+    If the specified depth is out of range (i.e., greater than the number of frames in the call stack), the function
+    raises ValueEror.
+
+    Examples:
+        >>> def foo():
+        ...     frame = _getframe(1)
+        ...     print(frame.f_code.co_name)  # Output: bar
+        >>> def bar():
+        ...     foo()
+        >>> bar()
+        bar
     """
 
     if not isinstance(__depth, int):
@@ -57,12 +86,40 @@ getframe = sys._getframe if hasattr(sys, '_getframe') else _getframe
 
 # noinspection SpellCheckingInspection
 def isfunctionincallchain(o, __depth=-1):
-    """A function that determines whether the given function object
-    or code object is in the call chain.
+    """
+    A function that determines whether the given function object or code object is in the call chain.
 
-    :param o: code object of function object
-    :param __depth: search of deep
-    :return: True or False
+    Args:
+        o (FunctionType or CodeType): The function object or code object to check.
+        __depth (int, optional): The depth of the call chain to search. Default is -1, which means search the entire
+         call chain.
+
+    Returns:
+        bool: True if the function or code object is found in the call chain, False otherwise.
+
+    Raises:
+        TypeError: If the input object is not a function or code object.
+
+    This function checks if the given function object or code object is present in the call chain of the current
+     execution.
+    The call chain is the sequence of function calls that led to the current point of execution.
+
+    Examples:
+        >>> def foo():
+        ...     return isfunctionincallchain(foo)
+        ...
+        >>> def bar():
+        ...     return isfunctionincallchain(foo)
+        ...
+        >>> def baz():
+        ...     return foo()
+        ...
+        >>> print(foo())
+        True
+        >>> print(bar())
+        False
+        >>> print(baz())
+        True
     """
     if not isinstance(o, (CodeType, FunctionType)):
         raise TypeError('\'o\' must be code or function')
@@ -81,18 +138,25 @@ def isfunctionincallchain(o, __depth=-1):
 
 # noinspection SpellCheckingInspection,PyUnusedLocal
 def nameof(o):
-    """A function that correctly determines the 'name' of an object,
-    without being tied to the object itself, for example:
+    """
+    Returns the name of an object.
 
-    >>> var1 = [1,2]
-    >>> var2 = var1
-    >>> print(nameof(var1))
-    var1
-    >>> print(nameof(var2))
-    var2
+    This function correctly determines the 'name' of an object, without being tied to the object itself.
+    It can be used to retrieve the name of variables, functions, classes, modules, and more.
 
-    :param o: any object
-    :return: name of object
+    Args:
+        o (object): The object for which to retrieve the name.
+
+    Returns:
+        str: The name of the object.
+
+    Examples:
+        >>> var1 = [1, 2]
+        >>> var2 = var1
+        >>> print(nameof(var1))
+        var1
+        >>> print(nameof(var2))
+        var2
     """
     frame = getframe(1)
     f_code, f_lineno = frame.f_code, frame.f_lineno
@@ -107,11 +171,29 @@ def nameof(o):
 
 
 # noinspection SpellCheckingInspection
+# TODO: _get_argval: Write exact types of arguments and return values
 def _get_argval(offset, op, arg, varnames=None, names=None, constants=None, cells=None):
-    """Based on dis._get_instructions_bytes function.
-
     """
+    Returns the argument value based on the opcode and argument. Based on dis._get_instructions_bytes function.
 
+    Args:
+        offset (int): The offset of the opcode in the code.
+        op (int): The opcode.
+        arg (int): The argument value.
+        varnames (object, optional): The variable names. Default is `None`.
+        names (object, optional): The names. Default is `None`.
+        constants (object, optional): The constants. Default is `None`.
+        cells (object, optional): The cells. Default is `None`.
+
+    Returns:
+        object or None: The argument value.
+
+    This function is used internally by the `pymagic9` module to retrieve the value of an argument based on the opcode
+    and argument index. It takes the offset, opcode, and argument as input and returns the corresponding value.
+
+    The `varnames`, `names`, `constants`, and `cells` arguments are optional and provide additional context for
+    resolving the argument value.
+    """
     # noinspection SpellCheckingInspection
     argval = None
     if arg is not None:
@@ -138,8 +220,18 @@ def _get_argval(offset, op, arg, varnames=None, names=None, constants=None, cell
 
 
 def _get_last_name(code, f_code):
-    """Return name that matches the last arg.
+    """
+    Returns the name that matches the last argument in the given bytecode.
 
+    Args:
+        code (bytes): The bytecode of the code object.
+        f_code (CodeType): The code object.
+
+    Returns:
+        Optional[str]: The name that matches the last argument, or None if no match is found.
+
+    This function is used internally by the `pymagic9` module to retrieve the name that corresponds to the last argument
+     in a given code object. It takes the bytecode and the code object.
     """
     arg, offset, op = None, None, None
     # noinspection PyProtectedMember
@@ -161,8 +253,19 @@ def _get_last_name(code, f_code):
 
 # noinspection SpellCheckingInspection
 def _unpack_opargs(code):
-    """dis._unpack_opargs function clone from py39 (to support earlier versions of python).
+    """
+    Unpacks the opcodes and their arguments from the given bytecode.
 
+    This function is a clone of the `dis._unpack_opargs` function from the Python 3.9.6 standard library's `dis` module.
+     This is done to support early versions of python.
+    It takes a bytecode object as input and yields a sequence of tuples containing the offset, opcode, and argument
+    of each opcode in the bytecode.
+
+    Args:
+        code (bytes or bytearray): The bytecode to unpack.
+
+    Yields:
+        tuple: A tuple containing the offset, opcode, and argument of each opcode.
     """
     extended_arg = 0
     for i in range(0, len(code), 2):
