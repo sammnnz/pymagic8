@@ -20,7 +20,7 @@ release = pymagic9.__version__
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["m2r", "sphinx.ext.napoleon", "sphinx.ext.autodoc"]
+extensions = ["sphinx.ext.napoleon", "sphinx.ext.autodoc", "m2r", "sphinx_multiversion"]
 
 autosectionlabel_prefix_document = True
 
@@ -32,6 +32,13 @@ language = 'en'
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
+html_static_path = [
+    "_static",
+]
 html_theme = "sphinx_rtd_theme"
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-html_static_path = ['_static']
+
+# -- Options for sphinx-multiversion -----------------------------------------
+smv_tag_whitelist = r'^v\d+\.\d+\.\d+$'
+# smv_branch_whitelist = None
+smv_released_pattern = r'^tags/.*$'
