@@ -36,6 +36,10 @@ html_static_path = [
     "_static",
 ]
 html_theme = "sphinx_rtd_theme"
+
+# https://github.com/dls-controls/versiongit/blob/master/docs/conf.py
+html_theme_options = dict(style_nav_header_background="rgb(7, 43, 93)")
+
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # -- Options for sphinx-multiversion -----------------------------------------
