@@ -1,0 +1,26 @@
+name: Changelog CI
+
+on:
+  pull_request:
+    branches: [ master ]
+    types: [ opened, reopened ]
+
+permissions:
+    contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: Run Changelog CI
+        uses: saadmk11/changelog-ci@v1.1.2
+        with:
+          changelog_filename: CHANGELOG.md
+          config_file: changelog-ci-config.yaml
+          github_token: ${{ secrets.PUBLIC_REPO_ACCESS_TOKEN }}

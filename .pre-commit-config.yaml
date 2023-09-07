@@ -26,5 +26,5 @@ repos:
     hooks:
       - id: mypy
         args: [ --config-file=pyproject.toml]
-        exclude: "tests"
+        exclude: ^(tests/|docs/)
         language_version: python3
