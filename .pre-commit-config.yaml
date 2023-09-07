@@ -1,0 +1,30 @@
+# https://pre-commit.com/hooks.html
+# https://github.com/peterjc/flake8-black/blob/master/.pre-commit-config.yaml
+# https://huggingface.co/spaces/blanchon/MVTec_Padim_Anomalib_Test/blob/main/.pre-commit-config.yaml
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-case-conflict
+      - id: check-docstring-first
+      - id: check-yaml
+      - id: debug-statements
+        exclude: tests/
+        language_version: python3
+      - id: end-of-file-fixer
+        files: \.(py|md|yml|yaml)$
+  - repo: https://github.com/PyCQA/flake8
+    rev: 3.9.2
+    hooks:
+      - id: flake8
+        additional_dependencies: [ 'importlib_metadata==4.13.0' ]
+        language_version: python3
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.910
+    hooks:
+      - id: mypy
+        args: [ --config-file=pyproject.toml]
+        exclude: ^(tests/|docs/)
+        language_version: python3
