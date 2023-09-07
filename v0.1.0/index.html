@@ -1,0 +1,205 @@
+<!-- https://github.com/dls-controls/versiongit/blob/master/docs/_templates/layout.html -->
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to pymagic9’s documentation! &mdash; pymagic9 0.1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="PyMagic9 lib" href="api-docs/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: rgb(7, 43, 93)" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            pymagic9
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+  <style>
+    /* style mobile top nav to look like main nav */
+    .wy-nav-top {
+        background: rgb(7, 43, 93)
+    }
+  </style>
+  
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api-docs/index.html">PyMagic9 lib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api-docs/pymagic9.html">pymagic9</a></li>
+</ul>
+
+  <!-- Add versions for selected branches + tags -->
+  <p class="caption"><span class="caption-text">Versions</span></p>
+  <ul id="versions"/>
+  <script>
+    // Add any branches to appear in the side pane here, tags will be added below
+    // Will only appear if docs are built and pushed in gh-pages
+    var versions = ['master', 'main'];
+    var dirs = new Set();
+    function addVersion(name) {
+      if (dirs.has(name)) {
+        var li = document.createElement("li");
+        var a = document.createElement("a");
+        a.href = 'https://sammnnz.github.io/pymagic9/' + name;
+        a.innerText = name;
+        li.appendChild(a)
+        document.getElementById('versions').appendChild(li);
+      }
+    }
+    Promise.all([
+      // Find gh-pages directories and populate `dirs`
+      fetch("https://api.github.com/repos/sammnnz/pymagic9/contents?ref=gh-pages")
+      .then(response => response.json())
+      .then(data => data.forEach(function(e) {
+        if (e.type == "dir") dirs.add(e.name);
+      })),
+      // Add tags to `versions`
+      fetch('https://api.github.com/repos/sammnnz/pymagic9/tags')
+        .then(response => response.json())
+        .then(data => data.forEach(function(e) {
+          versions.push(e.name);
+        }))
+      ]).then(_ => versions.forEach(addVersion))
+  </script>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: rgb(7, 43, 93)" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">pymagic9</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Welcome to pymagic9’s documentation!</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="welcome-to-pymagic9-s-documentation">
+<h1>Welcome to pymagic9’s documentation!<a class="headerlink" href="#welcome-to-pymagic9-s-documentation" title="Permalink to this heading">¶</a></h1>
+</section>
+<section id="pymagic9">
+<h1>pymagic9<a class="headerlink" href="#pymagic9" title="Permalink to this heading">¶</a></h1>
+<a class="reference external image-reference" href="http://www.apache.org/licenses/"><img alt="license" src="https://img.shields.io/badge/License-APACHE_2.0-yellow.svg" /></a>
+<p><span class="raw-html-m2r"><a><img src="https://img.shields.io/badge/python-2.7 | 3.6 | 3.7 | 3.8 | 3.9 | 3.10 -orange.svg"></a></span></p>
+<a class="reference external image-reference" href="https://github.com/sammnnz/pymagic9/actions/workflows/tests.yml/badge.svg"><img alt="Tests" src="https://github.com/sammnnz/pymagic9/actions/workflows/tests.yml/badge.svg" /></a>
+<a class="reference external image-reference" href="https://codecov.io/gh/sammnnz/pymagic9"><img alt="codecov" src="https://codecov.io/gh/sammnnz/pymagic9/branch/release-v0.1.0/graph/badge.svg?token=qQAiKKnctA" /></a>
+<section id="what-is-this">
+<h2>What is this?<a class="headerlink" href="#what-is-this" title="Permalink to this heading">¶</a></h2>
+<p>This is a Python library based on calling the stack of frames at runtime and analyzing the code object of frames.
+For example, the <code class="docutils literal notranslate"><span class="pre">nameof</span></code> function is implemented here (as in C#).</p>
+</section>
+<section id="install">
+<h2>Install<a class="headerlink" href="#install" title="Permalink to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pymagic9</span></code></p>
+</section>
+<section id="support">
+<h2>Support<a class="headerlink" href="#support" title="Permalink to this heading">¶</a></h2>
+<p>CPython <code class="docutils literal notranslate"><span class="pre">2.7</span></code>, <code class="docutils literal notranslate"><span class="pre">3.6</span></code>, <code class="docutils literal notranslate"><span class="pre">3.7</span></code>, <code class="docutils literal notranslate"><span class="pre">3.8</span></code>, <code class="docutils literal notranslate"><span class="pre">3.9</span></code>, <code class="docutils literal notranslate"><span class="pre">3.10</span></code> on <code class="docutils literal notranslate"><span class="pre">Windows</span></code>, <code class="docutils literal notranslate"><span class="pre">Ubuntu</span></code> and <code class="docutils literal notranslate"><span class="pre">MacOS</span></code> platform.</p>
+</section>
+<section id="other">
+<h2>Other<a class="headerlink" href="#other" title="Permalink to this heading">¶</a></h2>
+<p>See <a class="reference external" href="https://sammnnz.github.io/pymagic9/">docs</a> for more information.</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api-docs/index.html">PyMagic9 lib</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api-docs/index.html#pymagic9.getframe"><code class="docutils literal notranslate"><span class="pre">getframe()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-docs/index.html#pymagic9.isfunctionincallchain"><code class="docutils literal notranslate"><span class="pre">isfunctionincallchain()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-docs/index.html#pymagic9.nameof"><code class="docutils literal notranslate"><span class="pre">nameof()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-docs/pymagic9.html">pymagic9</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api-docs/pymagic9.html">pymagic9</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api-docs/pymagic9.html#pymagic9.pymagic9.getframe"><code class="docutils literal notranslate"><span class="pre">getframe()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-docs/pymagic9.html#pymagic9.pymagic9._getframe"><code class="docutils literal notranslate"><span class="pre">_getframe()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-docs/pymagic9.html#pymagic9.pymagic9._get_argval"><code class="docutils literal notranslate"><span class="pre">_get_argval()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-docs/pymagic9.html#pymagic9.pymagic9._get_last_name"><code class="docutils literal notranslate"><span class="pre">_get_last_name()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-docs/pymagic9.html#pymagic9.pymagic9._unpack_opargs"><code class="docutils literal notranslate"><span class="pre">_unpack_opargs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-docs/pymagic9.html#pymagic9.pymagic9.isfunctionincallchain"><code class="docutils literal notranslate"><span class="pre">isfunctionincallchain()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api-docs/pymagic9.html#pymagic9.pymagic9.nameof"><code class="docutils literal notranslate"><span class="pre">nameof()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api-docs/index.html" class="btn btn-neutral float-right" title="PyMagic9 lib" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Sam Nazarov.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
