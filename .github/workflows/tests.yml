@@ -4,6 +4,7 @@ on:
   push:
     branches: [master, develop, fe-*, release-*]
   pull_request:
+    branches: [master, develop, fe-*, release-*]
 
 jobs:
   test:
