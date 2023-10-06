@@ -8,11 +8,11 @@ if sys.version_info < (3,):
     # noinspection PyUnresolvedReferences
     from future_builtins import ascii
 from opcode import haslocal, hasconst, hasname, hasjrel, hasjabs, hascompare, hasfree, cmp_op, opmap, EXTENDED_ARG, \
-    HAVE_ARGUMENT
+    HAVE_ARGUMENT, opname
 from types import CodeType, FunctionType
 
 # noinspection SpellCheckingInspection
-__all__ = ["getframe", "isfunctionincallchain", "nameof"]
+__all__ = ["getframe", "isemptyfunction", "isfunctionincallchain", "nameof"]
 
 
 # noinspection SpellCheckingInspection
@@ -207,7 +207,6 @@ def _get_argval(offset, op, arg, varnames=None, names=None, constants=None, cell
             argval = cells[arg]
         elif op == opmap.get('FORMAT_VALUE'):
             argval = ((None, str, repr, ascii)[arg & 0x3], bool(arg & 0x4))
-
     return argval
 
 
@@ -267,3 +266,161 @@ def _unpack_opargs(code):
         else:
             arg = None
         yield i, op, arg
+
+
+# noinspection SpellCheckingInspection
+def isemptyfunction(func):
+    """
+    Checks if a function is empty or not.
+
+    Args:
+        func (function): The function to check.
+
+    Returns:
+        bool: True if the function is empty, False otherwise.
+
+    Raises:
+        TypeError: If the input object is not a function.
+
+    This function determines whether the given function is empty or not. An empty function is defined here as a
+    function that:
+    - may contain operators pass, return;
+    - may only return None;
+    - may contain a documentation string (classic documentation string in triple quotes, in double/single quotes as
+    `str` type, and also in `bytes` type) and comments;
+    - may contain any unreachable code (see `odd_function` in Examples);
+    - may contain statements (of immutable types) to have no effect (see `odd_function` in Examples).
+    If something else is present in the function, then it is considered not empty. It can be useful in scenarios where
+    you need to check if a function has any implementation or if it is just a placeholder.
+
+    The definition above may seem strange, but an empty function is defined this way for the sake of compatibility with
+    the versions of Python supported by this project (since the interpreter behaves differently on different versions
+    of Python, a simpler implementation of this function would return different values).
+
+    Examples:
+        >>> def empty_function():
+        ...     pass
+        ...
+        >>> print(isemptyfunction(empty_function))
+        True
+        >>> def empty_function():
+        ...     return
+        ...
+        >>> print(isemptyfunction(empty_function))
+        True
+        >>> def empty_function():
+        ...     return None
+        ...
+        >>> print(isemptyfunction(empty_function))
+        True
+        >>> def empty_function():  # doctest:+SKIP
+        ...     # only in Python3
+        ...     ...
+        ...
+        >>> print(isemptyfunction(empty_function))
+        True
+        >>> def empty_function():
+        ...     \""" docstring \"""
+        ...
+        >>> print(isemptyfunction(empty_function))
+        True
+        >>> def empty_function():
+        ...     "doc"
+        ...
+        >>> print(isemptyfunction(empty_function))
+        True
+        >>> def empty_function():
+        ...     b'Hello World!'
+        ...     return
+        >>> print(isemptyfunction(empty_function))
+        True
+        >>> def empty_function():
+        ...     # comments
+        ...     return
+        ...
+        >>> print(isemptyfunction(empty_function))
+        True
+        >>> def empty_function():
+        ...     \""" docstring \"""
+        ...     return
+        ...
+        >>> print(isemptyfunction(empty_function))
+        True
+        >>> empty_lambda = lambda x: None
+        >>> print(isemptyfunction(empty_lambda))
+        True
+        >>> def non_empty_function():
+        ...     print("Hello, world!")
+        ...
+        >>> print(isemptyfunction(non_empty_function))
+        False
+        >>> def non_empty_function():
+        ...     return 0
+        ...
+        >>> print(isemptyfunction(non_empty_function))
+        False
+        >>> def non_empty_function():  # statement (mutable) to have no effect
+        ...     []
+        ...     return
+        ...
+        >>> print(isemptyfunction(non_empty_function))
+        False
+        >>> not_empty_lambda = lambda: 0
+        >>> print(isemptyfunction(not_empty_lambda))
+        False
+
+        All odd_functions is empty!
+        >>> def odd_function():  # statement (immutable) to have no effect
+        ...     None
+        ...     100
+        ...     True
+        ...     ()
+        ...     "string"
+        ...     b'd\x01'
+        ...     return
+        ...
+        >>> print(isemptyfunction(odd_function))
+        True
+        >>> def odd_function(): \""" docstring \"""; return; None;  # oneline function and unreachable code
+        >>> print(isemptyfunction(odd_function))
+        True
+        >>> def odd_function():  # unreachable code
+        ...     return
+        ...     a = 2
+        >>> print(isemptyfunction(odd_function))
+        True
+    """
+    if not isinstance(func, FunctionType):
+        raise TypeError("'func' argument must be a function")
+
+    code = func.__code__
+    gen_opargs = _unpack_opargs(code.co_code)
+    op, loadop, loadarg = 0, 0, 0
+    for _, op, arg in gen_opargs:
+        if op == 9:  # skip if NOP; py310+
+            continue
+
+        if op == 1 and loadop:  # skip when POP_TOP next for LOAD_*
+            loadop = 0
+            continue
+
+        # TODO: isemptyfunction: explicitly specify opcodes
+        if opname[op].startswith("LOAD"):
+            if not loadop:  # skip when first LOAD_* opcode
+                loadop, loadarg = op, arg
+                continue
+
+            return False  # two LOAD_* opcodes in a row
+
+        break
+
+    if loadop != 100:  # first opcode must be LOAD_CONST
+        return False
+
+    if code.co_consts[loadarg] is not None:  # check for docstring
+        return False
+
+    if op != 83:  # second opcode must be RETURN_VALUE
+        return False
+
+    return True
