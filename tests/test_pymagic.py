@@ -124,8 +124,7 @@ def test__get_argval():
                                             varnames, names, constants, cells)
                     assert result == i.argval
             else:
-                bytea = bytearray(code)
-                for offset, op, arg in pm._unpack_opargs(bytea):
+                for offset, op, arg in pm._unpack_opargs(code):
                     pm._get_argval(offset, op, arg,
                                    varnames, names, constants, cells)
                     assert True
@@ -135,14 +134,7 @@ def test__get_argval():
 def test__get_last_name():
     frame = pm.getframe(0)
     f_code = frame.f_code
-
-    if sys.version_info >= (3,):
-        result = pm._get_last_name(f_code.co_code[:frame.f_lasti], f_code)
-    else:
-        _ = bytearray(f_code.co_code)[:frame.f_lasti]
-        del _[::-3]
-        result = pm._get_last_name(_, f_code)
-
+    result = pm._get_last_name(f_code.co_code[:frame.f_lasti], f_code)
     del f_code, frame
 
     assert result == 'frame'
