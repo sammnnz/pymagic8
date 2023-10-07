@@ -420,7 +420,4 @@ def isemptyfunction(func):
     if code.co_consts[loadarg] is not None:  # check for docstring
         return False
 
-    if op != 83:  # second opcode must be RETURN_VALUE
-        return False
-
-    return True
+    return op == 83  # second opcode must be RETURN_VALUE
