@@ -166,11 +166,7 @@ def nameof(o):
 
     for line in dis.findlinestarts(f_code):
         if f_lineno == line[1]:
-            if sys.version_info >= (3,):
-                return _get_last_name(f_code.co_code[line[0]:frame.f_lasti], f_code)
-
-            bytea = bytearray(f_code.co_code)[line[0]:frame.f_lasti]; del bytea[::-3]  # type: ignore # noqa E702
-            return _get_last_name(bytea, f_code)
+            return _get_last_name(f_code.co_code[line[0]:frame.f_lasti], f_code)
 
 
 # noinspection SpellCheckingInspection
@@ -243,19 +239,33 @@ def _get_last_name(code, f_code):
 
 
 # noinspection SpellCheckingInspection
-def _unpack_opargs(code):
+def _unpack_opargs_py2(code):
     """
-    Unpacks the opcodes and their arguments from the given bytecode.
+    _unpack_opargs function for python2
 
-    Args:
-        code (bytes or bytearray): The bytecode to unpack.
+    """
+    extended_arg, i = 0, 0
+    while i < len(code):
+        op = ord(code[i])
+        i += 1
+        if op >= HAVE_ARGUMENT:
+            arg = ord(code[i]) | ord(code[i + 1]) * 256 | extended_arg  # type: int | None
+            extended_arg, i = 0, i + 2
+            if op == EXTENDED_ARG:
+                exec("extended_arg = arg * 65536L")  # py3 support
+        else:
+            arg = None
 
-    Yields:
-        tuple: A tuple containing the offset, opcode, and argument of each opcode.
+        yield i, op, arg
+
+
+# noinspection SpellCheckingInspection
+def _unpack_opargs_py3(code):
+    """
+    _unpack_opargs function for python3
 
     This function is a clone of the `dis._unpack_opargs` function from the Python 3.9.6 standard library's `dis`
-    module. This is done to support early versions of python. It takes a bytecode object as input and yields a sequence
-    of tuples containing the offset, opcode, and argument of each opcode in the bytecode.
+    module.
     """
     extended_arg = 0
     for i in range(0, len(code), 2):
@@ -265,7 +275,25 @@ def _unpack_opargs(code):
             extended_arg = (arg << 8) if op == EXTENDED_ARG else 0
         else:
             arg = None
+
         yield i, op, arg
+
+
+# noinspection SpellCheckingInspection
+_unpack_opargs = _unpack_opargs_py2 if sys.version_info < (3,) else _unpack_opargs_py3
+_unpack_opargs.__doc__ = """
+Unpacks the opcodes and their arguments from the given bytecode. Works in Python 2.7 and Python 3.
+
+Args:
+    code (bytes or bytearray): The bytecode to unpack.
+
+Yields:
+    tuple: A tuple containing the offset, opcode, and argument of each opcode.
+
+It takes a bytecode object as input and yields a sequence of tuples containing the offset, opcode, and argument of each
+opcode in the bytecode.
+"""
+del _unpack_opargs_py2, _unpack_opargs_py3
 
 
 # noinspection SpellCheckingInspection
