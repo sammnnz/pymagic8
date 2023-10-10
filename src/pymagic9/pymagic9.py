@@ -4,7 +4,7 @@ This module provides functions for analyzing call stacks such as `nameof`, `isfu
 import dis
 import sys
 
-if sys.version_info < (3,):
+if sys.version_info < (3,):  # pragma: no cover
     # noinspection PyUnresolvedReferences
     from future_builtins import ascii
 from opcode import haslocal, hasconst, hasname, hasjrel, hasjabs, hascompare, hasfree, cmp_op, opmap, EXTENDED_ARG, \
@@ -55,7 +55,7 @@ def _getframe(__depth=0):
     if not isinstance(__depth, int):
         if sys.version_info >= (3, 5):
             raise TypeError('an integer is required (got type %s)' % type(__depth))
-        elif sys.version_info < (3, ):
+        elif sys.version_info < (3, ):  # pragma: no cover
             raise TypeError('an integer is required')
 
     try:
@@ -239,7 +239,7 @@ def _get_last_name(code, f_code):
 
 
 # noinspection SpellCheckingInspection
-def _unpack_opargs_py2(code):
+def _unpack_opargs_py2(code):  # pragma: no cover
     """
     _unpack_opargs function for python2
 
@@ -428,7 +428,7 @@ def isemptyfunction(func):
         if op == 9:  # skip if NOP; py310+
             continue
 
-        if op == 1 and loadop:  # skip when POP_TOP next for LOAD_*
+        if op == 1 and loadop:  # skip when POP_TOP next for LOAD_*  # pragma: no cover
             loadop = 0
             continue
 
