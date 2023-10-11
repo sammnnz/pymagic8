@@ -205,11 +205,6 @@ def not_empty_function_2():
     return 0
 
 
-def not_empty_function_3():
-    []
-    return
-
-
 not_empty_lambda_1 = lambda: 0  # noqa 731
 
 
@@ -235,6 +230,11 @@ def odd_function_4(a, *args):
 
 
 def odd_function_5():
+    []
+    return
+
+
+def odd_function_6():
     100
     return
 
@@ -252,13 +252,13 @@ def odd_function_5():
     (empty_lambda_1, pm.nameof(empty_lambda_1)),
     (not_empty_function_1, None),
     (not_empty_function_2, None),
-    (not_empty_function_3, None),
     (not_empty_lambda_1, pm.nameof(not_empty_lambda_1)),
     (odd_function_1, None),
     (odd_function_2, None),
     (odd_function_3, None),
     (odd_function_4, None),
     (odd_function_5, None),
+    (odd_function_6, None),
 ])
 def test_isemptyfunction(func, name):
     if name is None:
