@@ -8,7 +8,7 @@ if sys.version_info < (3,):  # pragma: no cover
     # noinspection PyUnresolvedReferences
     from future_builtins import ascii
 from opcode import haslocal, hasconst, hasname, hasjrel, hasjabs, hascompare, hasfree, cmp_op, opmap, EXTENDED_ARG, \
-    HAVE_ARGUMENT, opname
+    HAVE_ARGUMENT
 from types import CodeType, FunctionType
 
 # noinspection SpellCheckingInspection
@@ -317,7 +317,7 @@ def isemptyfunction(func):
     - may contain a documentation string (classic documentation string in triple quotes, in double/single quotes as
     `str` type, and also in `bytes` type) and comments;
     - may contain any unreachable code (see `odd_function` in Examples);
-    - may contain statements (of immutable types) to have no effect (see `odd_function` in Examples).
+    - may contain statements to have no effect (see `odd_function` in Examples).
     If something else is present in the function, then it is considered not empty. It can be useful in scenarios where
     you need to check if a function has any implementation or if it is just a placeholder.
 
@@ -387,12 +387,6 @@ def isemptyfunction(func):
         ...
         >>> print(isemptyfunction(non_empty_function))
         False
-        >>> def non_empty_function():  # statement (mutable) to have no effect
-        ...     []
-        ...     return
-        ...
-        >>> print(isemptyfunction(non_empty_function))
-        False
         >>> not_empty_lambda = lambda: 0
         >>> print(isemptyfunction(not_empty_lambda))
         False
@@ -409,12 +403,19 @@ def isemptyfunction(func):
         ...
         >>> print(isemptyfunction(odd_function))
         True
+        >>> def odd_function():  # statement (mutable) to have no effect
+        ...     []
+        ...     return
+        ...
+        >>> print(isemptyfunction(odd_function))
+        True
         >>> def odd_function(): \""" docstring \"""; return; None;  # oneline function and unreachable code
         >>> print(isemptyfunction(odd_function))
         True
         >>> def odd_function():  # unreachable code
         ...     return
         ...     a = 2
+        ...
         >>> print(isemptyfunction(odd_function))
         True
     """
@@ -423,29 +424,32 @@ def isemptyfunction(func):
 
     code = func.__code__
     gen_opargs = _unpack_opargs(code.co_code)
-    op, loadop, loadarg = 0, 0, 0
+    op, special_op, special_arg = 0, 0, 0
+    POP_TOP, NOP = 1, 9
     for _, op, arg in gen_opargs:
-        if op == 9:  # skip if NOP; py310+
+        if op == NOP:  # skip if NOP; py310
             continue
 
-        if op == 1 and loadop:  # skip when POP_TOP next for LOAD_*  # pragma: no cover
-            loadop = 0
+        if op == POP_TOP and special_op:  # skip when POP_TOP next for special opcode
+            special_op = 0
             continue
 
-        # TODO: isemptyfunction: explicitly specify opcodes
-        if opname[op].startswith("LOAD"):
-            if not loadop:  # skip when first LOAD_* opcode
-                loadop, loadarg = op, arg
+        if op >= HAVE_ARGUMENT:  # special opcode
+            if op == EXTENDED_ARG:
                 continue
 
-            return False  # two LOAD_* opcodes in a row
+            if not special_op:  # skip when first opcode have argument (special opcode)
+                special_op, special_arg = op, arg
+                continue
+
+            return False  # two special opcodes in a row
 
         break
 
-    if loadop != 100:  # first opcode must be LOAD_CONST
+    if special_op != 100:  # first opcode must be LOAD_CONST
         return False
 
-    if code.co_consts[loadarg] is not None:  # check for docstring
+    if code.co_consts[special_arg] is not None:  # check for docstring
         return False
 
     return op == 83  # second opcode must be RETURN_VALUE
