@@ -4,13 +4,8 @@ This module provides functions for analyzing call stacks such as `nameof`, `isfu
 import dis
 import sys
 
-if sys.version_info < (3,):  # pragma: no cover
-    # noinspection PyUnresolvedReferences
-    from future_builtins import ascii
-
 from multipledispatch import dispatch, Dispatcher
-from opcode import haslocal, hasconst, hasname, hasjrel, hasjabs, hascompare, hasfree, cmp_op, opmap, EXTENDED_ARG, \
-    HAVE_ARGUMENT
+from opcode import hasname, EXTENDED_ARG, HAVE_ARGUMENT
 from types import CodeType, FunctionType
 from typing import Any, Callable, Dict, Optional, Tuple, Union
 
@@ -169,76 +164,13 @@ def nameof(o):
 
     for line in dis.findlinestarts(f_code):
         if f_lineno == line[1]:
-            return _get_last_name(f_code.co_code[line[0]:frame.f_lasti], f_code)
+            ind = -3 if sys.version_info < (3,) else -2
+            _, op, arg = next(_unpack_opargs(f_code.co_code[:frame.f_lasti][ind:]))
 
+            if op not in hasname:
+                return ''
 
-# noinspection SpellCheckingInspection
-# TODO: _get_argval: Write exact types of arguments and return values
-def _get_argval(offset, op, arg, varnames=None, names=None, constants=None, cells=None):
-    """
-    Returns the argument value based on the opcode and argument. Based on *dis._get_instructions_bytes* function (see
-    `dis.get_instructions <https://docs.python.org/3.9/library/dis.html#dis.get_instructions>`_).
-
-    This function is used internally by the `pymagic9` module to retrieve the value of an argument based on the opcode
-    and argument index. It takes the offset, opcode, and argument as input and returns the corresponding value.
-
-    The `varnames`, `names`, `constants`, and `cells` arguments are optional and provide additional context for
-    resolving the argument value.
-    """
-    # noinspection SpellCheckingInspection
-    argval = None
-    if arg is not None:
-        argval = arg
-        if op in haslocal:
-            argval = varnames[arg]
-        elif op in hasconst:
-            argval = constants[arg]
-        elif op in hasname:
-            argval = names[arg]
-        elif op in hasjabs:
-            if sys.version_info >= (3, 10):
-                argval = arg * 2
-        elif op in hasjrel:
-            argval = offset + 2 + arg if sys.version_info < (3, 10) else offset + 2 + arg*2
-        elif op in hascompare:
-            argval = cmp_op[arg]
-        elif op in hasfree:
-            argval = cells[arg]
-        elif op == opmap.get('FORMAT_VALUE'):
-            argval = ((None, str, repr, ascii)[arg & 0x3], bool(arg & 0x4))
-    return argval
-
-
-def _get_last_name(code, f_code):
-    """
-    Returns the name that matches the last argument in the given bytecode.
-
-    Args:
-        code (bytes): The bytecode of the code object.
-        f_code (CodeType): The code object.
-
-    Returns:
-        str or None: The name that matches the last argument, or None if no match is found.
-
-    This function is used internally by the `pymagic9` module to retrieve the name that corresponds to the last
-    argument in a given code object. It takes the bytecode and the code object.
-    """
-    arg, offset, op = None, None, None
-    # noinspection PyProtectedMember
-    for offset, op, arg in _unpack_opargs(code):
-        pass
-
-    if arg is None:
-        return
-
-    if op not in hasname:
-        return _get_argval(offset, op, arg,
-                           f_code.co_varnames,
-                           f_code.co_names,
-                           f_code.co_consts,
-                           f_code.co_cellvars + f_code.co_freevars)
-
-    return f_code.co_names[arg]
+            return f_code.co_names[arg]
 
 
 # noinspection SpellCheckingInspection
@@ -428,12 +360,11 @@ def isemptyfunction(func):
     code = func.__code__
     gen_opargs = _unpack_opargs(code.co_code)
     op, special_op, special_arg = 0, 0, 0
-    POP_TOP, NOP = 1, 9
     for _, op, arg in gen_opargs:
-        if op == NOP:  # skip if NOP; py310
+        if op == 9:  # skip if NOP; py310
             continue
 
-        if op == POP_TOP and special_op:  # skip when POP_TOP next for special opcode
+        if op == 1 and special_op:  # skip when POP_TOP next for special opcode
             special_op = 0
             continue
 
@@ -477,7 +408,8 @@ class PropertyMeta(type):
         ...     )
         ...
         ...     @property
-        ...     def property3(self):  # only in python3
+        ...     def property3(self):  # doctest:+SKIP
+        ...         # only in Python3
         ...         ...
         ...
         ...     @property
@@ -559,7 +491,7 @@ class PropertyMeta(type):
                 except KeyError:
                     pass
                 else:
-                    raise AttributeError("'property' object has private setter")
+                    raise AttributeError("'property' is readonly")
 
                 frame = getframe(1)
                 # Cautious during debugging: if the stop point falls into
@@ -570,7 +502,7 @@ class PropertyMeta(type):
 
                     return
 
-                raise AttributeError("'property' object has private setter")
+                raise AttributeError("'property' is readonly")
 
             return _wrapper
 
@@ -614,7 +546,7 @@ class PropertyMeta(type):
 
                 if fdel is None:
                     fdel = Ellipsis
-            elif fset is None and is_accessor_gen:  # for private setter (initialize in constructor of class)
+            elif fset is None and is_accessor_gen:  # for readonly properties (initialize in constructor of class)
                 fset = _setter(
                     fields,
                     getattr(getattr(cls, "__init__", None), '__code__'),
@@ -637,7 +569,7 @@ class PropertyMeta(type):
         del del_ns, set_ns
         del _deleter, _getter, _setter
 
-    # __call__ implement here for private setter
+    # __call__ implement here for readonly properties
     # noinspection PyTypeChecker
     def __call__(cls, *args, **kwargs):
         instance = object.__new__(cls)
