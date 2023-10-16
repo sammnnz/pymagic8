@@ -580,7 +580,7 @@ class PropertyMeta(type):
 
             return _wrapper
 
-        # setter for properties with private setter
+        # setter for readonly properties
         @dispatch(dict, (CodeType, type(None)), CodeType, namespace=set_ns)  # type: ignore # noqa: F811
         def _setter(fi, init_code, call_code):  # noqa: F811
             def _wrapper(self, value):
