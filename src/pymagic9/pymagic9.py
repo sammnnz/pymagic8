@@ -7,12 +7,15 @@ import sys
 if sys.version_info < (3,):  # pragma: no cover
     # noinspection PyUnresolvedReferences
     from future_builtins import ascii
+
+from multipledispatch import dispatch, Dispatcher
 from opcode import haslocal, hasconst, hasname, hasjrel, hasjabs, hascompare, hasfree, cmp_op, opmap, EXTENDED_ARG, \
     HAVE_ARGUMENT
 from types import CodeType, FunctionType
+from typing import Any, Callable, Dict, Optional, Tuple, Union
 
 # noinspection SpellCheckingInspection
-__all__ = ["getframe", "isemptyfunction", "isfunctionincallchain", "nameof"]
+__all__ = ["getframe", "isemptyfunction", "isfunctionincallchain", "nameof", "PropertyMeta"]
 
 
 # noinspection SpellCheckingInspection
@@ -453,3 +456,203 @@ def isemptyfunction(func):
         return False
 
     return op == 83  # second opcode must be RETURN_VALUE
+
+
+# noinspection PySuperArguments
+class PropertyMeta(type):
+    # noinspection SpellCheckingInspection,PyCompatibility
+    """
+    This metaclass allows you to create auto-implemented properties (like in C#, where you can declare properties
+    without explicitly defining a getter and setter), for which you can use an ellipsis or empty functions to indicate
+    that the Python itself would create the auto-implemented accessor.
+
+    An auto-implemented accessor will be any accessor defined using an ellipsis or an empty function (clearly in the
+    `Examples` section below).
+
+    Examples:
+        >>> class MyClass(metaclass=PropertyMeta):
+        ...     property1 = property(..., Ellipsis)
+        ...     property2 = property(fget=...,
+        ...                          fdel=...,
+        ...     )
+        ...
+        ...     @property
+        ...     def property3(self):  # only in python3
+        ...         ...
+        ...
+        ...     @property
+        ...     def property4(self):
+        ...         pass
+        ...
+        ...     @property4.setter
+        ...     def property4(self, value):
+        ...         pass
+        ...
+        ...     @property
+        ...     def property5(self):
+        ...         return
+
+    """
+
+    # noinspection SpellCheckingInspection,PySuperArguments
+    def __init__(cls, name, bases, attrs):
+        super(PropertyMeta, cls).__init__(name, bases, attrs)
+        del_ns = {}  # type: Dict[str, Dispatcher]
+        set_ns = {}  # type: Dict[str, Dispatcher]
+
+        @dispatch(dict, namespace=del_ns)  # noqa: F811
+        def _deleter(fi):  # noqa: F811
+            def _wrapper(self):
+                try:
+                    del fi[(self,)]
+                except KeyError:
+                    raise AttributeError(
+                        "auto-implemented field does not exist or has already been erased"
+                    )
+
+            return _wrapper
+
+        # deleter for overriding an existing deleter
+        # noinspection SpellCheckingInspection
+        @dispatch(type, FunctionType, dict, namespace=del_ns)  # type: ignore # noqa: F811
+        def _deleter(_cls, _fdel, fi):
+            def _wrapper(self, *args):
+                try:
+                    del fi[(self,)]
+                except KeyError:
+                    pass
+                finally:
+                    return _fdel(self, *args)
+
+            return _wrapper
+
+        def _getter(fi):
+            def _wrapper(self):
+                try:
+                    return fi[(self,)]
+                except KeyError:
+                    raise AttributeError(
+                        "auto-implemented field does not exist or has already been erased"
+                    )
+
+            return _wrapper
+
+        @dispatch(dict, namespace=set_ns)  # noqa: F811
+        def _setter(fi):  # noqa: F811
+            def _wrapper(self, value):
+                try:
+                    fi[(self,)]
+                except KeyError:
+                    fi[(self,)] = value
+                else:
+                    if fi[(self,)] != value:
+                        fi[(self,)] = value
+
+            return _wrapper
+
+        # setter for readonly properties
+        @dispatch(dict, (CodeType, type(None)), CodeType, namespace=set_ns)  # type: ignore # noqa: F811
+        def _setter(fi, init_code, call_code):  # noqa: F811
+            def _wrapper(self, value):
+                try:
+                    fi[(self,)]
+                except KeyError:
+                    pass
+                else:
+                    raise AttributeError("'property' object has private setter")
+
+                frame = getframe(1)
+                # Cautious during debugging: if the stop point falls into
+                # the __init__ / __call__ function, then its duplicate may
+                # be called and, as a result, the code objects will vary.
+                if init_code is frame.f_code and call_code is frame.f_back.f_code:
+                    fi[(self,)] = value
+
+                    return
+
+                raise AttributeError("'property' object has private setter")
+
+            return _wrapper
+
+        # setter for overriding an existing setter
+        # noinspection SpellCheckingInspection
+        @dispatch(FunctionType, dict, namespace=set_ns)  # type: ignore # noqa: F811
+        def _setter(_fset, fi):  # noqa: F811
+            def _wrapper(self, value):
+                try:
+                    fi[(self,)]
+                except KeyError:
+                    fi[(self,)] = value
+                else:
+                    if fi[(self,)] != value:
+                        fi[(self,)] = value
+
+                return _fset(self, value)
+
+            return _wrapper
+
+        for key, obj in attrs.items():
+            if not isinstance(obj, property):
+                continue
+
+            fget = obj.fget  # type: Union[Optional[Callable[[Any], Any]], ellipsis]  # noqa: F821
+            fset = obj.fset  # type: Union[Optional[Callable[[Any, Any], None]], ellipsis]  # noqa: F821
+            fdel = obj.fdel  # type: Union[Optional[Callable[[Any], None]], ellipsis]  # noqa: F821
+            is_accessor_gen = False
+            fields = {}  # type: Dict[Tuple[type], Any]
+
+            if _is_autoimplemented_accessor(fget):
+                fget = _getter(fields)
+                is_accessor_gen = True
+
+                if fdel is None:
+                    fdel = Ellipsis
+
+            if _is_autoimplemented_accessor(fset):
+                fset = _setter(fields)
+                is_accessor_gen = True
+
+                if fdel is None:
+                    fdel = Ellipsis
+            elif fset is None and is_accessor_gen:  # for private setter (initialize in constructor of class)
+                fset = _setter(
+                    fields,
+                    getattr(getattr(cls, "__init__", None), '__code__'),
+                    PropertyMeta.__call__.__code__
+                )
+            elif is_accessor_gen:
+                fset = _setter(fset, fields)
+
+            if _is_autoimplemented_accessor(fdel):
+                fdel = _deleter(fields)
+                is_accessor_gen = True
+            elif fdel is not None and is_accessor_gen:
+                fdel = _deleter(cls, fdel, fields)
+
+            if is_accessor_gen:
+                setattr(cls, key, property(fget, fset, fdel, obj.doc if hasattr(obj, 'doc') else None))  # type: ignore
+
+            del fdel, fget, fset, fields
+
+        del del_ns, set_ns
+        del _deleter, _getter, _setter
+
+    # __call__ implement here for private setter
+    # noinspection PyTypeChecker
+    def __call__(cls, *args, **kwargs):
+        instance = object.__new__(cls)
+        instance.__init__(*args, **kwargs)
+        return instance
+
+
+def _is_autoimplemented_accessor(accessor):
+    """
+    Accessor is auto-implemented if it is an ellipsis or an empty function.
+
+    """
+    if accessor is None:
+        return False
+    elif accessor is Ellipsis:
+        return True
+
+    return isemptyfunction(accessor)
