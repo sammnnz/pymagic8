@@ -7,6 +7,8 @@ import pymagic9.pymagic9 as pm
 import pytest
 import sys
 
+from six import add_metaclass
+
 
 # noinspection SpellCheckingInspection
 @pytest.mark.parametrize("__depth",
@@ -269,3 +271,123 @@ def test_isemptyfunction(func, name):
 def test_isemptyfunction_invalid_input():
     with pytest.raises(TypeError, match=r"\'func\' argument must be a function"):
         pm.isemptyfunction(None)
+
+
+# noinspection PyMissingOrEmptyDocstring
+@pytest.fixture(scope="class")
+def create_PropertyMeta():
+
+    @add_metaclass(pm.PropertyMeta)
+    # noinspection PyMissingOrEmptyDocstring,PyCompatibility
+    class _(object):
+        # noinspection PyPropertyAccess
+        def __init__(self):
+            self.__field = 1
+            self.property1 = "property1"
+            self.property2 = "property2"
+            self.property3 = "property3"
+            self.property4 = "property4"
+            self.property5 = "property5"
+
+        # noinspection PyTypeChecker,PyPropertyDefinition
+        property1 = property(Ellipsis, Ellipsis)
+
+        # noinspection PyTypeChecker,PyPropertyDefinition
+        property2 = property(
+            fget=Ellipsis,
+            fdel=Ellipsis
+        )
+
+        # empty accessor
+        # noinspection PyPropertyDefinition, PyStatementEffect
+        @property
+        def property3(self):
+            Ellipsis
+
+        @property3.setter
+        def property3(self, value):
+            print(value)
+
+        # empty accessor
+        # noinspection PyPropertyDefinition
+        @property
+        def property4(self):
+            pass
+
+        @property4.deleter
+        def property4(self):
+            print('delete')
+
+        # empty accessor
+        @property4.setter
+        def property4(self, value):
+            return
+
+        # empty accessor
+        @property
+        def property5(self):
+            return None
+
+    return _
+
+
+# noinspection PyMissingOrEmptyDocstring
+class TestPropertyMeta:
+    @staticmethod
+    def test___init__():
+        Meta = pm.PropertyMeta("Meta", (), {"i": 1})
+        assert isinstance(Meta, pm.PropertyMeta)
+
+    @staticmethod
+    def test_property1_get(create_PropertyMeta):
+        TestClass = create_PropertyMeta()
+        assert TestClass.property1 == "property1"
+
+    @staticmethod
+    def test_property1_del(create_PropertyMeta):
+        TestClass = create_PropertyMeta()
+        del TestClass.property1
+        for attr, _ in TestClass.__dict__.items():
+            if attr.startswith("__") and attr.endswith("property1"):
+                assert TestClass.property1 is None
+
+    @staticmethod
+    def test_property2_set(create_PropertyMeta):
+        TestClass = create_PropertyMeta()
+        with pytest.raises(AttributeError, match=r"'property' object has private setter"):
+            TestClass.property2 = None
+
+    @staticmethod
+    def test_property3_set(create_PropertyMeta):
+        TestClass = create_PropertyMeta()
+        TestClass.property3 = None
+        assert TestClass.property3 is None
+
+    @staticmethod
+    def test_property4_del(create_PropertyMeta):
+        TestClass = create_PropertyMeta()
+        del TestClass.property4
+        for attr, _ in TestClass.__dict__.items():
+            if attr.startswith("__") and attr.endswith("property4"):
+                assert TestClass.property4 is None
+
+
+@pytest.mark.parametrize("func", [
+    empty_function_1,
+    not_empty_function_1,
+    None,
+    Ellipsis
+])
+def test__is_auto_implemented_accessor(func):
+    expected = None
+    if func is None:
+        expected = False
+    elif func is Ellipsis:
+        expected = True
+    elif func.__name__.startswith("empty"):
+        expected = True
+    elif func.__name__.startswith("not"):
+        expected = False
+
+    # noinspection PyUnresolvedReferences
+    assert expected is pm._is_autoimplemented_accessor(func)
