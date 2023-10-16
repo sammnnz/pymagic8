@@ -492,36 +492,6 @@ class PropertyMeta(type):
         ...     def property5(self):
         ...         return
 
-    In fact, a private field is created inside the class, through which the property works. Detailed working
-    principle:
-    1. If an auto-implemented getter is defined (for example, using an ellipsis), then the following are created:
-      - private field in the current class;
-      - a getter that returns the created private field;
-      - a deleter that deletes the created private field, if it exists (if a custom deleter has been defined, after
-      deleting the created private field, the initially defined custom deleter is called).
-    Otherwise, if a getter is defined, it remains.
-
-    2. If an auto-implemented setter is defined (for example, using an ellipsis), then the following are created:
-      - private field in the current class;
-      - a deleter that deletes the created private field, if it exists (if a custom deleter has been defined, after
-      deleting the created private field, the initially defined custom deleter is called).
-    Otherwise, if a custom setter is defined along with an auto-implemented getter, then the following is created:
-    - private field in the current class;
-    - a setter that preserves the functionality of the initially defined custom setter (that is, after the new value is
-    placed in the created private field, the initially defined custom setter is called).
-    Otherwise, if the setter is not defined and an auto-implemented getter is defined, then the following are created:
-    - private field in the current class;
-    - private setter (that is, a setter that can be called only from the class initializer);
-    - a deleter that deletes the created private field, if it exists (if a custom deleter has been defined, after
-    deleting the created private field, the initially defined custom deleter is called).
-
-    3. If an auto-implemented deleter is defined (for example, using an ellipsis), then the following are created:
-    - a deleter that deletes the created private field if it exists.
-    Otherwise, if a deleter is defined, then the following is created:
-    - a deleter that, after deleting the created private field (if it exists), calls the initially defined custom
-    deleter.
-
-    As you can see, the work of initially defined custom accessors is not disrupted.
     """
 
     # noinspection SpellCheckingInspection,PySuperArguments
