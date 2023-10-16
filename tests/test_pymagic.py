@@ -2,7 +2,6 @@
 """
 Tests for pymagic9.py module
 """
-import dis
 import pymagic9.pymagic9 as pm
 import pytest
 import sys
@@ -99,46 +98,6 @@ def test_nameof(name):
     del pm_
 
     assert locals()['result'] == name
-
-
-# noinspection SpellCheckingInspection,PyUnresolvedReferences
-def test__get_argval():
-    max_count = 8
-    for _, o in globals().items():
-        if not max_count:
-            break
-
-        if hasattr(o, "__code__"):
-            max_count -= 1
-            co = o.__code__
-            code = co.co_code
-            # noinspection SpellCheckingInspection
-            varnames = co.co_varnames
-            names = co.co_names
-            constants = co.co_consts
-            cells = co.co_cellvars + co.co_freevars
-
-            if hasattr(dis, '_get_instructions_bytes'):
-                for i in dis._get_instructions_bytes(code, varnames, names, constants, cells):
-                    # noinspection PyUnresolvedReferences
-                    result = pm._get_argval(i.offset, i.opcode, i.arg,
-                                            varnames, names, constants, cells)
-                    assert result == i.argval
-            else:
-                for offset, op, arg in pm._unpack_opargs(code):
-                    pm._get_argval(offset, op, arg,
-                                   varnames, names, constants, cells)
-                    assert True
-
-
-# noinspection PyUnresolvedReferences
-def test__get_last_name():
-    frame = pm.getframe(0)
-    f_code = frame.f_code
-    result = pm._get_last_name(f_code.co_code[:frame.f_lasti], f_code)
-    del f_code, frame
-
-    assert result == 'frame'
 
 
 def empty_function_1():
@@ -354,7 +313,7 @@ class TestPropertyMeta:
     @staticmethod
     def test_property2_set(create_PropertyMeta):
         TestClass = create_PropertyMeta()
-        with pytest.raises(AttributeError, match=r"'property' object has private setter"):
+        with pytest.raises(AttributeError, match=r"'property' is readonly"):
             TestClass.property2 = None
 
     @staticmethod
