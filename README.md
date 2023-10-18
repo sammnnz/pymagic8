@@ -22,7 +22,7 @@ pip install pymagic9
 
 **[isfunctionincallchain](https://sammnnz.github.io/pymagic9/latest/api-docs/pymagic9.html#pymagic9.pymagic9.isfunctionincallchain)**: Determines whether the given function object or code object is present in the call chain.
 
-**[nameof](https://sammnnz.github.io/pymagic9/latest/api-docs/pymagic9.html#pymagic9.pymagic9.nameof)**: This function allows you to retrieve the name of a variable, function, class, or module as a string. This can be useful in scenarios where you need to dynamically access or manipulate names in your code.
+**[nameof](https://sammnnz.github.io/pymagic9/latest/api-docs/pymagic9.html#pymagic9.pymagic9.nameof)**: This function correctly determines the "name" of an object, without being tied to the object itself. It can be used to retrieve the name of variables, functions, classes, modules, and more.
 
 **[PropertyMeta](https://sammnnz.github.io/pymagic9/latest/api-docs/pymagic9.html#pymagic9.pymagic9.PropertyMeta)**: This metaclass allows you to create `auto-implemented properties` (like in C#, where you can declare properties without explicitly defining a getter and setter), for which you can use an ellipsis or empty functions to indicate that the Python itself would create the auto-implemented accessor.
 
