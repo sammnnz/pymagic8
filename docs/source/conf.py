@@ -20,7 +20,7 @@ release = pymagic9.__version__
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinx.ext.napoleon", "sphinx.ext.autodoc", "m2r", "sphinx_multiversion"]
+extensions = ["sphinx.ext.napoleon", "sphinx.ext.autodoc", "sphinx_multiversion"]
 
 autosectionlabel_prefix_document = True
 

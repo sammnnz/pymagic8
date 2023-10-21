@@ -5,7 +5,7 @@
 ![Tests](https://github.com/sammnnz/pymagic9/actions/workflows/tests.yml/badge.svg)
 [![codecov](https://codecov.io/gh/sammnnz/pymagic9/branch/release-v0.9.0/graph/badge.svg?token=qQAiKKnctA)](https://codecov.io/gh/sammnnz/pymagic9)
 
-This is a Python library based on calling the stack of frames at runtime and analyzing the code object of frames (bytecode and other attributes). Basically, it implements some C# features. For example, it contains the `nameof` function and `auto-implemented properties`. See the [documentation](https://sammnnz.github.io/pymagic9/) for more information.
+This is a Python library based on calling the stack of frames at runtime and analyzing the code object of frames. Basically, it implements some C# features. For example, it contains the `nameof` function and `auto-implemented properties`. See the [documentation](https://sammnnz.github.io/pymagic9/) for more information.
 
 ## Installation
 

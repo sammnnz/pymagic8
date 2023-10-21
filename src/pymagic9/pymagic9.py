@@ -1,5 +1,5 @@
 """
-This module provides functions for analyzing call stacks such as `nameof`, `isfunctionincallchain`, etc.
+This module provides functions for analyzing call stacks such as `nameof`, `auto-implemented properties`, etc.
 """
 import dis
 import sys
@@ -146,10 +146,11 @@ def nameof(o):
         o (object): The object for which to retrieve the name.
 
     Returns:
-        str: The name of the object.
+        str: The name of the object or empty string.
 
     This function correctly determines the 'name' of an object, without being tied to the object itself.
-    It can be used to retrieve the name of variables, functions, classes, modules, and more.
+    It can be used to retrieve the name of variables, functions, classes, modules, and more. An empty string will be
+    returned if an explicit value or call is passed to the `nameof` function as an argument.
 
     Examples:
         >>> var1 = [1, 2]
@@ -158,6 +159,8 @@ def nameof(o):
         var1
         >>> print(nameof(var2))
         var2
+        >>> print(nameof(123))  # doctest:+SKIP
+        empty string ("")
     """
     frame = getframe(1)
     f_code, f_lineno = frame.f_code, frame.f_lineno
@@ -220,7 +223,7 @@ _unpack_opargs.__doc__ = """
 Unpacks the opcodes and their arguments from the given bytecode. Works in Python 2.7 and Python 3.
 
 Args:
-    code (bytes or bytearray): The bytecode to unpack.
+    code (bytes): The bytecode to unpack.
 
 Yields:
     tuple: A tuple containing the offset, opcode, and argument of each opcode.
@@ -325,8 +328,7 @@ def isemptyfunction(func):
         >>> not_empty_lambda = lambda: 0
         >>> print(isemptyfunction(not_empty_lambda))
         False
-
-        All odd_functions is empty!
+        >>> # All odd_functions is empty!
         >>> def odd_function():  # statement (immutable) to have no effect
         ...     None
         ...     100
@@ -395,34 +397,233 @@ class PropertyMeta(type):
     """
     This metaclass allows you to create auto-implemented properties (like in C#, where you can declare properties
     without explicitly defining a getter and setter), for which you can use an ellipsis or empty functions to indicate
-    that the Python itself would create the auto-implemented accessor.
+    that the Python itself would create the special accessor.
 
-    An auto-implemented accessor will be any accessor defined using an ellipsis or an empty function (clearly in the
-    `Examples` section below).
+    Detailed working principle:
+
+    1. Ordinary auto-implemented properties:
+
+        .. code-block:: python
+
+           property1 = property(..., ...)
+           property1 = property(..., ..., ...)
+
+        In this case, the following are created:
+
+            - **dictionary** (in the closure of the metaclass initializer) for recording and retrieving the value;
+            - **getter** that returns a value from the dictionary (if the value is not in the dictionary, then the
+              ``AttributeError`` exception is thrown);
+            - **setter** that writes a value to the dictionary if there is no value yet, or the value differs from that
+              written in the dictionary;
+            - **deleter** that deletes a value from the dictionary if it exists (if the value is not in the dictionary,
+              then the ``AttributeError`` exception is thrown).
+
+    2. Readonly auto-implemented properties:
+
+        .. code-block:: python
+
+           property1 = property(...)
+
+        In this case, the following are created:
+
+            - **dictionary** (in the closure of the metaclass initializer) for recording and retrieving the value;
+            - **getter** that returns a value from the dictionary (if the value is not in the dictionary, then the
+              ``AttributeError`` exception is thrown);
+            - **setter** that can be called only once from the class initializer when creating an instance (when called
+              again, the ``AttributeError`` exception is thrown);
+            - **deleter** that deletes a value from the dictionary if it exists (if the value is not in the
+              dictionary, then the ``AttributeError`` exception is thrown).
+
+    3. Auto-implemented properties with custom getter:
+
+        .. code-block:: python
+
+           # getter is not empty function
+           property1 = property(getter, ...)
+
+        In this case, a custom getter remains. Otherwise, everything is the same as in the previous paragraphs.
+
+    4. Auto-implemented properties with custom setter, deleter:
+
+        .. code-block:: python
+
+           # setter, deleter is not empty functions
+           property1 = property(..., setter)
+           property1 = property(..., ..., deleter)
+           property1 = property(..., setter, deleter)
+
+        In this case, the following are created:
+
+            - **dictionary** (in the closure of the metaclass initializer) for recording and retrieving the value;
+            - **getter** that returns a value from the dictionary (if the value is not in the dictionary, then the
+              ``AttributeError`` exception is thrown);
+            - **setter** that preserves the functionality of the initially defined user setter (that is, after the new
+              value is written to the dictionary, the initially defined user setter is called).
+            - **deleter** that preserves the functionality of the initially defined user deleter (that is, after
+              deleting the value from the dictionary, the initially defined custom deleter is called).
+
+    5. Properties that will not be processed by the PropertyMeta metaclass:
+
+        .. code-block:: python
+
+           # getter, setter, deleter is not empty functions
+           property1 = property(getter)
+           property1 = property(getter, setter)
+           property1 = property(getter, setter, deleter)
+           property1 = property(getter, setter, ...)
 
     Examples:
-        >>> class MyClass(metaclass=PropertyMeta):
-        ...     property1 = property(..., Ellipsis)
-        ...     property2 = property(fget=...,
-        ...                          fdel=...,
-        ...     )
-        ...
-        ...     @property
-        ...     def property3(self):  # doctest:+SKIP
-        ...         # only in Python3
-        ...         ...
-        ...
-        ...     @property
-        ...     def property4(self):
-        ...         pass
-        ...
-        ...     @property4.setter
-        ...     def property4(self, value):
-        ...         pass
-        ...
-        ...     @property
-        ...     def property5(self):
-        ...         return
+        1. Import the PropertyMeta metaclass and assign it as a metaclass for the desired class:
+
+        .. code-block:: python
+
+           from pymagic9 import PropertyMeta
+
+
+           class Person(metaclass=PropertyMeta):
+               pass
+
+        2. Create properties in this class with empty accessors (using empty function or ellipsis) to indicate that
+        this property will be auto-implemented:
+
+        .. code-block:: python
+
+           from pymagic9 import PropertyMeta
+
+
+           class Person(metaclass=PropertyMeta):
+               \"""class Person\"""
+               def __init__(self, name):
+                   self.name = name
+
+               name = property(fget=...,)           # readonly property
+               age = property(fget=..., fset=...,)  # ordinary property
+
+        3. Now for an `ordinary` property we can get and put values into it at any time. But for a `readonly` property,
+        you can put a value into it only once, at the time of creating an instance of the class:
+
+        .. code-block:: python
+
+           from pymagic9 import PropertyMeta
+
+
+           class Person(metaclass=PropertyMeta):
+               \"""class Person\"""
+               def __init__(self, name):
+                   self.name = name
+                   # self.name = "Sam"  # raise AttributeError: 'property' is readonly (reassigning value)
+
+               name = property(fget=...,)           # readonly property
+               age = property(fget=..., fset=...,)  # ordinary property
+
+
+           if __name__ == "__main__":
+               person = Person("Tom")
+               person.age = 24
+               print(person.name + ',', person.age)  # Tom, 24
+               # person.name = "Sam"  # raise AttributeError: 'property' is readonly
+
+        4. To delete a property value, use the `del` operator:
+
+        .. code-block:: python
+
+           from pymagic9 import PropertyMeta
+
+
+           class Person(metaclass=PropertyMeta):
+               \"""class Person\"""
+               def __init__(self, name):
+                   self.name = name
+
+               name = property(fget=...,)           # readonly property
+               age = property(fget=..., fset=...,)  # ordinary property
+
+
+           if __name__ == "__main__":
+               person = Person("Tom")
+               person.age = 24
+               print(person.name + ',', person.age)  # Tom, 24
+               del person.name
+               # print(person.name)  # raise AttributeError: auto-implemented field does not exist or has already been
+                                     # erased
+
+        5. If the `getter` is specified by an empty accessor (using empty function or ellipsis), and the `setter` is
+        not an empty function, then `setter` will also be called. This can be used as a callback when assigning a value
+        to a property:
+
+        .. code-block:: python
+
+           from pymagic9 import nameof, PropertyMeta
+
+
+           def NotifyPropertyChanged(propertyname, value):
+               \"""Notify property changed\"""
+               # Do something
+               print(propertyname + ',', value)
+
+
+           class Person(metaclass=PropertyMeta):
+               \"""class Person\"""
+               def __init__(self, name):
+                   self.name = name
+
+               name = property(fget=...,)           # readonly property
+               age = property(fget=..., fset=...,)  # ordinary property
+
+               @property
+               def height(self):
+                   \"""Person height in cm\"""
+                   return
+
+               @height.setter
+               def height(self, value):
+                   NotifyPropertyChanged(nameof(self.height), value)
+
+
+           if __name__ == "__main__":
+               person = Person("Tom")
+               person.age = 24
+               print(person.name + ',', person.age)  # Tom, 24
+               person.height = 180  # height, 180
+
+        6. Similar code for `Python 2.7` looks like this:
+
+        .. code-block:: python
+
+           from pymagic9 import nameof, PropertyMeta
+
+           __metaclass__ = PropertyMeta
+
+
+           def NotifyPropertyChanged(propertyname, value):
+               \"""Notify property changed\"""
+               # Do something
+               print(propertyname + ', ' + str(value))
+
+
+           class Person:
+               \"""class Person\"""
+               def __init__(self, name):
+                   self.name = name
+
+               name = property(fget=Ellipsis,)                # readonly property
+               age = property(fget=Ellipsis, fset=Ellipsis,)  # ordinary property
+
+               @property
+               def height(self):
+                   \"""Person height in cm\"""
+                   return
+
+               @height.setter
+               def height(self, value):
+                   NotifyPropertyChanged(nameof(self.height), value)
+
+
+           if __name__ == "__main__":
+               person = Person("Tom")
+               person.age = 24
+               print(person.name + ', ' + str(person.age))  # Tom, 24
+               person.height = 180  # height, 180
 
     """
 

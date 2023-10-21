@@ -1,9 +1,13 @@
-pymagic9
+pymagic9.py
 =========================
 
 .. automodule:: pymagic9.pymagic9
    :members:
-   :exclude-members: getframe
+   :exclude-members: getframe, isemptyfunction, isfunctionincallchain, nameof, PropertyMeta
+
+   .. _PropertyMeta:
+
+   .. autoclass:: pymagic9.pymagic9.PropertyMeta
 
    .. function:: getframe(__depth=0)
 
@@ -11,10 +15,15 @@ pymagic9
       used here if it exists in the version of python being used. Otherwise, the :ref:`_getframe <private-getframe>`
       polyfill is used.
 
+   .. autofunction:: pymagic9.pymagic9.isemptyfunction
+   .. autofunction:: pymagic9.pymagic9.isfunctionincallchain
+
+   .. _nameof:
+
+   .. autofunction:: pymagic9.pymagic9.nameof
+
    .. _private-getframe:
 
    .. autofunction:: pymagic9.pymagic9._getframe
 
-   .. autofunction:: pymagic9.pymagic9._get_argval
-   .. autofunction:: pymagic9.pymagic9._get_last_name
    .. autofunction:: pymagic9.pymagic9._unpack_opargs

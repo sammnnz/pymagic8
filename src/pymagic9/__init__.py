@@ -1,5 +1,7 @@
 """
-PyMagic9 - a library for analyzing call stacks using frames.
+PyMagic9 - a library based on calling the stack of frames at runtime and analyzing the code object of frames.
+Basically, it implements some C# features. For example, it contains the `nameof` function and `auto-implemented
+properties`. See the documentation for more information.
 """
 from .pymagic9 import getframe, isemptyfunction, isfunctionincallchain, nameof, PropertyMeta
 
