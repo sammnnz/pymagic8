@@ -5,10 +5,6 @@ on:
     branches: [ master ]
     tags:
       - 'v*.*.*'
-#  pull_request:
-#    branches: [ master ]
-#    types: [ closed ]
-  workflow_dispatch:
 
 permissions:
     contents: write
@@ -37,8 +33,8 @@ jobs:
                 for file in dir.iterdir():
                     if file.is_dir():
                         try:
-                            last_version = parse(file.name)
-                            if current_version <= last_version:
+                            version = parse(file.name)
+                            if current_version <= version:
                                 set_output('is_new_version_docs', 'false')
                                 exit()
 
@@ -66,53 +62,22 @@ jobs:
       - name: Sphinx build
         run: |
           sphinx-build docs/source docs/_build
-      - name: Prepare doc tag
-        id: prepare_tag
-        if: startsWith(github.ref, 'refs/tags/')
-        run: |
-          echo "DOCS_TAG=docs-${{ github.ref_name }}" >> $GITHUB_OUTPUT
-      - name: Delete old doc tag
-        continue-on-error: true
-        run: |
-          git clone https://github.com/sammnnz/pymagic9.git
-          cd pymagic9
-          git remote set-url origin https://x-access-token:${{ secrets.PUBLIC_REPO_ACCESS_TOKEN }}@github.com/sammnnz/pymagic9.git
-          git tag -d ${{ steps.prepare_tag.outputs.DOCS_TAG }}
-          git push --force origin :refs/tags/${{ steps.prepare_tag.outputs.DOCS_TAG }}
       - name: Deploy docs
         uses: peaceiris/actions-gh-pages@v3
         with:
           allow_empty_commit: true
           destination_dir: ./${{ github.ref_name }}
-          force_orphan: false
-          keep_files: true
+          keep_files: false
           personal_token: ${{ secrets.PUBLIC_REPO_ACCESS_TOKEN }}
           publish_branch: gh-pages
           publish_dir: docs/_build/
-          tag_name: ${{ steps.prepare_tag.outputs.DOCS_TAG }}
-          tag_message: 'Deployment ${{ steps.prepare_tag.outputs.DOCS_TAG }}'
-      - name: Recreate redirect/index.html
-        if: needs.docs-check.outputs.is_new_version_docs == 'true'
-        uses: jannekem/run-python-script-action@v1
-        id: script
-        with:
-          script: |
-            import re
-            
-            path, pattern = "docs/redirect/index.html", re.compile(r"\{\s*%\s*latest-version\s*%\s*}")
-
-            with open(path, "r", encoding="utf8") as file:
-                content = pattern.sub("${{ github.ref_name }}", file.read())
-
-            with open(path, "w+", encoding="utf8") as file:
-                file.write(content)
-      - name: Deploy redirect/index.html
+      - name: Deploy latest
         if: needs.docs-check.outputs.is_new_version_docs == 'true'
         uses: peaceiris/actions-gh-pages@v3
         with:
           allow_empty_commit: true
-          force_orphan: false
-          keep_files: true
+          destination_dir: ./latest
+          keep_files: false
           personal_token: ${{ secrets.PUBLIC_REPO_ACCESS_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: docs/redirect/
+          publish_dir: docs/_build/
