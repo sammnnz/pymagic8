@@ -42,3 +42,4 @@ jobs:
           verbose: true
           # https://docs.codecov.com/docs/commit-status#disabling-a-status
           patch: off
+          project: off

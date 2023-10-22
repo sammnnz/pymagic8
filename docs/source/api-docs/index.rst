@@ -3,8 +3,9 @@ PyMagic9 lib
 
 .. automodule:: pymagic9
    :members:
-   :exclude-members: getframe
+   :exclude-members: getframe, PropertyMeta
 
+   .. autoclass:: PropertyMeta
    .. function:: getframe(__depth=0)
 
       The `sys._getframe <https://docs.python.org/3/library/sys.html?highlight=_getframe#sys._getframe>`_ function is
