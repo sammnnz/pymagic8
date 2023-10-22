@@ -1,0 +1,674 @@
+<!-- https://github.com/dls-controls/versiongit/blob/master/docs/_templates/layout.html -->
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pymagic9.py &mdash; pymagic9 0.9.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="PyMagic9 lib" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: rgb(7, 43, 93)" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            pymagic9
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+  <style>
+    /* style mobile top nav to look like main nav */
+    .wy-nav-top {
+        background: rgb(7, 43, 93)
+    }
+  </style>
+  
+              <p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">PyMagic9 lib</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">pymagic9.py</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#pymagic9.pymagic9.PropertyMeta"><code class="docutils literal notranslate"><span class="pre">PropertyMeta</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pymagic9.pymagic9.getframe"><code class="docutils literal notranslate"><span class="pre">getframe()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pymagic9.pymagic9.isemptyfunction"><code class="docutils literal notranslate"><span class="pre">isemptyfunction()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pymagic9.pymagic9.isfunctionincallchain"><code class="docutils literal notranslate"><span class="pre">isfunctionincallchain()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pymagic9.pymagic9.nameof"><code class="docutils literal notranslate"><span class="pre">nameof()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pymagic9.pymagic9._getframe"><code class="docutils literal notranslate"><span class="pre">_getframe()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pymagic9.pymagic9._unpack_opargs"><code class="docutils literal notranslate"><span class="pre">_unpack_opargs()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  <!-- Add versions for selected branches + tags -->
+  <p class="caption"><span class="caption-text">Versions</span></p>
+  <ul id="versions"/>
+  <script>
+    // Add any branches to appear in the side pane here, tags will be added below
+    // Will only appear if docs are built and pushed in gh-pages
+    var versions = ['master', 'main'];
+    var dirs = new Set();
+    function addVersion(name) {
+      if (dirs.has(name)) {
+        var li = document.createElement("li");
+        var a = document.createElement("a");
+        a.href = 'https://sammnnz.github.io/pymagic9/' + name;
+        a.innerText = name;
+        li.appendChild(a)
+        document.getElementById('versions').appendChild(li);
+      }
+    }
+    Promise.all([
+      // Find gh-pages directories and populate `dirs`
+      fetch("https://api.github.com/repos/sammnnz/pymagic9/contents?ref=gh-pages")
+      .then(response => response.json())
+      .then(data => data.forEach(function(e) {
+        if (e.type == "dir") dirs.add(e.name);
+      })),
+      // Add tags to `versions`
+      fetch('https://api.github.com/repos/sammnnz/pymagic9/tags')
+        .then(response => response.json())
+        .then(data => data.forEach(function(e) {
+          versions.push(e.name);
+        }))
+      ]).then(_ => versions.forEach(addVersion))
+  </script>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: rgb(7, 43, 93)" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pymagic9</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">PyMagic9 lib</a></li>
+      <li class="breadcrumb-item active">pymagic9.py</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api-docs/pymagic9.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pymagic9.pymagic9">
+<span id="pymagic9-py"></span><h1>pymagic9.py<a class="headerlink" href="#module-pymagic9.pymagic9" title="Permalink to this heading">¶</a></h1>
+<p>This module provides functions for analyzing call stacks such as <cite>nameof</cite>, <cite>auto-implemented properties</cite>, etc.</p>
+<span class="target" id="propertymeta"></span><dl class="py class">
+<dt class="sig sig-object py" id="pymagic9.pymagic9.PropertyMeta">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pymagic9.pymagic9.</span></span><span class="sig-name descname"><span class="pre">PropertyMeta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attrs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymagic9.pymagic9.PropertyMeta" title="Permalink to this definition">¶</a></dt>
+<dd><p>This metaclass allows you to create auto-implemented properties (like in C#, where you can declare properties
+without explicitly defining a getter and setter), for which you can use an ellipsis or empty functions to indicate
+that the Python itself would create the special accessor.</p>
+<p>Detailed working principle:</p>
+<ol class="arabic">
+<li><p>Ordinary auto-implemented properties:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">property1</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="n">property1</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this case, the following are created:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>dictionary</strong> (in the closure of the metaclass initializer) for recording and retrieving the value;</p></li>
+<li><p><strong>getter</strong> that returns a value from the dictionary (if the value is not in the dictionary, then the
+<code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> exception is thrown);</p></li>
+<li><p><strong>setter</strong> that writes a value to the dictionary if there is no value yet, or the value differs from that
+written in the dictionary;</p></li>
+<li><p><strong>deleter</strong> that deletes a value from the dictionary if it exists (if the value is not in the dictionary,
+then the <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> exception is thrown).</p></li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+</li>
+<li><p>Readonly auto-implemented properties:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">property1</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this case, the following are created:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>dictionary</strong> (in the closure of the metaclass initializer) for recording and retrieving the value;</p></li>
+<li><p><strong>getter</strong> that returns a value from the dictionary (if the value is not in the dictionary, then the
+<code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> exception is thrown);</p></li>
+<li><p><strong>setter</strong> that can be called only once from the class initializer when creating an instance (when called
+again, the <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> exception is thrown);</p></li>
+<li><p><strong>deleter</strong> that deletes a value from the dictionary if it exists (if the value is not in the
+dictionary, then the <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> exception is thrown).</p></li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+</li>
+<li><p>Auto-implemented properties with custom getter:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># getter is not empty function</span>
+<span class="n">property1</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">getter</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this case, a custom getter remains. Otherwise, everything is the same as in the previous paragraphs.</p>
+</div></blockquote>
+</li>
+<li><p>Auto-implemented properties with custom setter, deleter:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># setter, deleter is not empty functions</span>
+<span class="n">property1</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">setter</span><span class="p">)</span>
+<span class="n">property1</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="n">deleter</span><span class="p">)</span>
+<span class="n">property1</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">setter</span><span class="p">,</span> <span class="n">deleter</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this case, the following are created:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>dictionary</strong> (in the closure of the metaclass initializer) for recording and retrieving the value;</p></li>
+<li><p><strong>getter</strong> that returns a value from the dictionary (if the value is not in the dictionary, then the
+<code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> exception is thrown);</p></li>
+<li><p><strong>setter</strong> that preserves the functionality of the initially defined user setter (that is, after the new
+value is written to the dictionary, the initially defined user setter is called).</p></li>
+<li><p><strong>deleter</strong> that preserves the functionality of the initially defined user deleter (that is, after
+deleting the value from the dictionary, the initially defined custom deleter is called).</p></li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+</li>
+<li><p>Properties that will not be processed by the PropertyMeta metaclass:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># getter, setter, deleter is not empty functions</span>
+<span class="n">property1</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">getter</span><span class="p">)</span>
+<span class="n">property1</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">getter</span><span class="p">,</span> <span class="n">setter</span><span class="p">)</span>
+<span class="n">property1</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">getter</span><span class="p">,</span> <span class="n">setter</span><span class="p">,</span> <span class="n">deleter</span><span class="p">)</span>
+<span class="n">property1</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">getter</span><span class="p">,</span> <span class="n">setter</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p class="rubric">Examples</p>
+<ol class="arabic simple">
+<li><p>Import the PropertyMeta metaclass and assign it as a metaclass for the desired class:</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pymagic9</span> <span class="kn">import</span> <span class="n">PropertyMeta</span>
+
+
+<span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">PropertyMeta</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>2. Create properties in this class with empty accessors (using empty function or ellipsis) to indicate that
+this property will be auto-implemented:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pymagic9</span> <span class="kn">import</span> <span class="n">PropertyMeta</span>
+
+
+<span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">PropertyMeta</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;class Person&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=...</span><span class="p">,)</span>           <span class="c1"># readonly property</span>
+    <span class="n">age</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=...</span><span class="p">,</span> <span class="n">fset</span><span class="o">=...</span><span class="p">,)</span>  <span class="c1"># ordinary property</span>
+</pre></div>
+</div>
+<p>3. Now for an <cite>ordinary</cite> property we can get and put values into it at any time. But for a <cite>readonly</cite> property,
+you can put a value into it only once, at the time of creating an instance of the class:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pymagic9</span> <span class="kn">import</span> <span class="n">PropertyMeta</span>
+
+
+<span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">PropertyMeta</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;class Person&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="c1"># self.name = &quot;Sam&quot;  # raise AttributeError: &#39;property&#39; is readonly (reassigning value)</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=...</span><span class="p">,)</span>           <span class="c1"># readonly property</span>
+    <span class="n">age</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=...</span><span class="p">,</span> <span class="n">fset</span><span class="o">=...</span><span class="p">,)</span>  <span class="c1"># ordinary property</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">person</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s2">&quot;Tom&quot;</span><span class="p">)</span>
+    <span class="n">person</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="mi">24</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">person</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">person</span><span class="o">.</span><span class="n">age</span><span class="p">)</span>  <span class="c1"># Tom, 24</span>
+    <span class="c1"># person.name = &quot;Sam&quot;  # raise AttributeError: &#39;property&#39; is readonly</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>To delete a property value, use the <cite>del</cite> operator:</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pymagic9</span> <span class="kn">import</span> <span class="n">PropertyMeta</span>
+
+
+<span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">PropertyMeta</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;class Person&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=...</span><span class="p">,)</span>           <span class="c1"># readonly property</span>
+    <span class="n">age</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=...</span><span class="p">,</span> <span class="n">fset</span><span class="o">=...</span><span class="p">,)</span>  <span class="c1"># ordinary property</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">person</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s2">&quot;Tom&quot;</span><span class="p">)</span>
+    <span class="n">person</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="mi">24</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">person</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">person</span><span class="o">.</span><span class="n">age</span><span class="p">)</span>  <span class="c1"># Tom, 24</span>
+    <span class="k">del</span> <span class="n">person</span><span class="o">.</span><span class="n">name</span>
+    <span class="c1"># print(person.name)  # raise AttributeError: auto-implemented field does not exist or has already been</span>
+                          <span class="c1"># erased</span>
+</pre></div>
+</div>
+<p>5. If the <cite>getter</cite> is specified by an empty accessor (using empty function or ellipsis), and the <cite>setter</cite> is
+not an empty function, then <cite>setter</cite> will also be called. This can be used as a callback when assigning a value
+to a property:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pymagic9</span> <span class="kn">import</span> <span class="n">nameof</span><span class="p">,</span> <span class="n">PropertyMeta</span>
+
+
+<span class="k">def</span> <span class="nf">NotifyPropertyChanged</span><span class="p">(</span><span class="n">propertyname</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Notify property changed&quot;&quot;&quot;</span>
+    <span class="c1"># Do something</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">propertyname</span> <span class="o">+</span> <span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">PropertyMeta</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;class Person&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=...</span><span class="p">,)</span>           <span class="c1"># readonly property</span>
+    <span class="n">age</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=...</span><span class="p">,</span> <span class="n">fset</span><span class="o">=...</span><span class="p">,)</span>  <span class="c1"># ordinary property</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">height</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Person height in cm&quot;&quot;&quot;</span>
+        <span class="k">return</span>
+
+    <span class="nd">@height</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">height</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">NotifyPropertyChanged</span><span class="p">(</span><span class="n">nameof</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">),</span> <span class="n">value</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">person</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s2">&quot;Tom&quot;</span><span class="p">)</span>
+    <span class="n">person</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="mi">24</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">person</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">person</span><span class="o">.</span><span class="n">age</span><span class="p">)</span>  <span class="c1"># Tom, 24</span>
+    <span class="n">person</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="mi">180</span>  <span class="c1"># height, 180</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="6">
+<li><p>Similar code for <cite>Python 2.7</cite> looks like this:</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pymagic9</span> <span class="kn">import</span> <span class="n">nameof</span><span class="p">,</span> <span class="n">PropertyMeta</span>
+
+<span class="n">__metaclass__</span> <span class="o">=</span> <span class="n">PropertyMeta</span>
+
+
+<span class="k">def</span> <span class="nf">NotifyPropertyChanged</span><span class="p">(</span><span class="n">propertyname</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Notify property changed&quot;&quot;&quot;</span>
+    <span class="c1"># Do something</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">propertyname</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+
+<span class="k">class</span> <span class="nc">Person</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;class Person&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="bp">Ellipsis</span><span class="p">,)</span>                <span class="c1"># readonly property</span>
+    <span class="n">age</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">fget</span><span class="o">=</span><span class="bp">Ellipsis</span><span class="p">,</span> <span class="n">fset</span><span class="o">=</span><span class="bp">Ellipsis</span><span class="p">,)</span>  <span class="c1"># ordinary property</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">height</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Person height in cm&quot;&quot;&quot;</span>
+        <span class="k">return</span>
+
+    <span class="nd">@height</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">height</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">NotifyPropertyChanged</span><span class="p">(</span><span class="n">nameof</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">),</span> <span class="n">value</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">person</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="s2">&quot;Tom&quot;</span><span class="p">)</span>
+    <span class="n">person</span><span class="o">.</span><span class="n">age</span> <span class="o">=</span> <span class="mi">24</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">person</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">person</span><span class="o">.</span><span class="n">age</span><span class="p">))</span>  <span class="c1"># Tom, 24</span>
+    <span class="n">person</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="mi">180</span>  <span class="c1"># height, 180</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymagic9.pymagic9.getframe">
+<span class="sig-prename descclassname"><span class="pre">pymagic9.pymagic9.</span></span><span class="sig-name descname"><span class="pre">getframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">__depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymagic9.pymagic9.getframe" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <a class="reference external" href="https://docs.python.org/3/library/sys.html?highlight=_getframe#sys._getframe">sys._getframe</a> function is
+used here if it exists in the version of python being used. Otherwise, the <a class="reference internal" href="#private-getframe"><span class="std std-ref">_getframe</span></a>
+polyfill is used.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymagic9.pymagic9.isemptyfunction">
+<span class="sig-prename descclassname"><span class="pre">pymagic9.pymagic9.</span></span><span class="sig-name descname"><span class="pre">isemptyfunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymagic9.pymagic9.isemptyfunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if a function is empty or not.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>func</strong> (<em>function</em>) – The function to check.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the function is empty, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If the input object is not a function.</p>
+</dd>
+</dl>
+<p>This function determines whether the given function is empty or not. An empty function is defined here as a
+function that:
+- may contain operators pass, return;
+- may only return None;
+- may contain a documentation string (classic documentation string in triple quotes, in double/single quotes as
+<cite>str</cite> type, and also in <cite>bytes</cite> type) and comments;
+- may contain any unreachable code (see <cite>odd_function</cite> in Examples);
+- may contain statements to have no effect (see <cite>odd_function</cite> in Examples).
+If something else is present in the function, then it is considered not empty. It can be useful in scenarios where
+you need to check if a function has any implementation or if it is just a placeholder.</p>
+<p>The definition above may seem strange, but an empty function is defined this way for the sake of compatibility with
+the versions of Python supported by this project (since the interpreter behaves differently on different versions
+of Python, a simpler implementation of this function would return different values).</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">empty_function</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">pass</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">isemptyfunction</span><span class="p">(</span><span class="n">empty_function</span><span class="p">))</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">empty_function</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">return</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">isemptyfunction</span><span class="p">(</span><span class="n">empty_function</span><span class="p">))</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">empty_function</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="kc">None</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">isemptyfunction</span><span class="p">(</span><span class="n">empty_function</span><span class="p">))</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">empty_function</span><span class="p">():</span>  
+<span class="gp">... </span>    <span class="c1"># only in Python3</span>
+<span class="gp">... </span>    <span class="o">...</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">isemptyfunction</span><span class="p">(</span><span class="n">empty_function</span><span class="p">))</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">empty_function</span><span class="p">():</span>
+<span class="gp">... </span><span class="w">    </span><span class="sd">&quot;&quot;&quot; docstring &quot;&quot;&quot;</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">isemptyfunction</span><span class="p">(</span><span class="n">empty_function</span><span class="p">))</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">empty_function</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="s2">&quot;doc&quot;</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">isemptyfunction</span><span class="p">(</span><span class="n">empty_function</span><span class="p">))</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">empty_function</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="sa">b</span><span class="s1">&#39;Hello World!&#39;</span>
+<span class="gp">... </span>    <span class="k">return</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">isemptyfunction</span><span class="p">(</span><span class="n">empty_function</span><span class="p">))</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">empty_function</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="c1"># comments</span>
+<span class="gp">... </span>    <span class="k">return</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">isemptyfunction</span><span class="p">(</span><span class="n">empty_function</span><span class="p">))</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">empty_function</span><span class="p">():</span>
+<span class="gp">... </span><span class="w">    </span><span class="sd">&quot;&quot;&quot; docstring &quot;&quot;&quot;</span>
+<span class="gp">... </span>    <span class="k">return</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">isemptyfunction</span><span class="p">(</span><span class="n">empty_function</span><span class="p">))</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">empty_lambda</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">None</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">isemptyfunction</span><span class="p">(</span><span class="n">empty_lambda</span><span class="p">))</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">non_empty_function</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello, world!&quot;</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">isemptyfunction</span><span class="p">(</span><span class="n">non_empty_function</span><span class="p">))</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">non_empty_function</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="mi">0</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">isemptyfunction</span><span class="p">(</span><span class="n">non_empty_function</span><span class="p">))</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">not_empty_lambda</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">isemptyfunction</span><span class="p">(</span><span class="n">not_empty_lambda</span><span class="p">))</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># All odd_functions is empty!</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">odd_function</span><span class="p">():</span>  <span class="c1"># statement (immutable) to have no effect</span>
+<span class="gp">... </span>    <span class="kc">None</span>
+<span class="gp">... </span>    <span class="mi">100</span>
+<span class="gp">... </span>    <span class="kc">True</span>
+<span class="gp">... </span>    <span class="p">()</span>
+<span class="gp">... </span>    <span class="s2">&quot;string&quot;</span>
+<span class="gp">... </span>    <span class="sa">b</span><span class="s1">&#39;d&#39;</span>
+<span class="gp">... </span>    <span class="k">return</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">isemptyfunction</span><span class="p">(</span><span class="n">odd_function</span><span class="p">))</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">odd_function</span><span class="p">():</span>  <span class="c1"># statement (mutable) to have no effect</span>
+<span class="gp">... </span>    <span class="p">[]</span>
+<span class="gp">... </span>    <span class="k">return</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">isemptyfunction</span><span class="p">(</span><span class="n">odd_function</span><span class="p">))</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">odd_function</span><span class="p">():</span> <span class="s2">&quot;&quot;&quot; docstring &quot;&quot;&quot;</span><span class="p">;</span> <span class="k">return</span><span class="p">;</span> <span class="kc">None</span><span class="p">;</span>  <span class="c1"># oneline function and unreachable code</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">isemptyfunction</span><span class="p">(</span><span class="n">odd_function</span><span class="p">))</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">odd_function</span><span class="p">():</span>  <span class="c1"># unreachable code</span>
+<span class="gp">... </span>    <span class="k">return</span>
+<span class="gp">... </span>    <span class="n">a</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">isemptyfunction</span><span class="p">(</span><span class="n">odd_function</span><span class="p">))</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymagic9.pymagic9.isfunctionincallchain">
+<span class="sig-prename descclassname"><span class="pre">pymagic9.pymagic9.</span></span><span class="sig-name descname"><span class="pre">isfunctionincallchain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">o</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">__depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymagic9.pymagic9.isfunctionincallchain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines whether the given function object or code object is present in the call chain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>o</strong> (<em>FunctionType</em><em> or </em><em>CodeType</em>) – The function object or code object to check.</p></li>
+<li><p><strong>__depth</strong> (<em>int</em><em>, </em><em>optional</em>) – The depth of the call chain to search. Default is -1, which means search the entire
+call chain.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the function or code object is found in the call chain, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If the input object is not a function or code object.</p>
+</dd>
+</dl>
+<p>This function checks if the given function object or code object is present in the call chain of the current
+execution. The call chain is the sequence of function calls that led to the current point of execution.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Be careful when debugging in PyCharm - there may be incorrect behavior when a function that is being debugged
+(a function that has breakpoints) is passed as an argument.</p>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">foo</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">isfunctionincallchain</span><span class="p">(</span><span class="n">foo</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">bar</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">isfunctionincallchain</span><span class="p">(</span><span class="n">foo</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">baz</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">foo</span><span class="p">()</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">foo</span><span class="p">())</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">bar</span><span class="p">())</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">baz</span><span class="p">())</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<span class="target" id="nameof"></span><dl class="py function">
+<dt class="sig sig-object py" id="pymagic9.pymagic9.nameof">
+<span class="sig-prename descclassname"><span class="pre">pymagic9.pymagic9.</span></span><span class="sig-name descname"><span class="pre">nameof</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">o</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymagic9.pymagic9.nameof" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the name of an object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>o</strong> (<em>object</em>) – The object for which to retrieve the name.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The name of the object or empty string.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p>This function correctly determines the ‘name’ of an object, without being tied to the object itself.
+It can be used to retrieve the name of variables, functions, classes, modules, and more. An empty string will be
+returned if an explicit value or call is passed to the <cite>nameof</cite> function as an argument.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">var1</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">var2</span> <span class="o">=</span> <span class="n">var1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">nameof</span><span class="p">(</span><span class="n">var1</span><span class="p">))</span>
+<span class="go">var1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">nameof</span><span class="p">(</span><span class="n">var2</span><span class="p">))</span>
+<span class="go">var2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">nameof</span><span class="p">(</span><span class="mi">123</span><span class="p">))</span>  
+<span class="go">empty string (&quot;&quot;)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<span class="target" id="private-getframe"></span><dl class="py function">
+<dt class="sig sig-object py" id="pymagic9.pymagic9._getframe">
+<span class="sig-prename descclassname"><span class="pre">pymagic9.pymagic9.</span></span><span class="sig-name descname"><span class="pre">_getframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">__depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymagic9.pymagic9._getframe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Polyfill for the built-in sys._getframe function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>__depth</strong> (<em>int</em><em>, </em><em>optional</em>) – The depth of the call stack to traverse. A value of 0 represents the current frame,
+1 represents the caller’s frame, and so on.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The frame object at the specified depth in the call stack, or None if the depth is out of
+range.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>FrameType or None</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>TypeError</strong> – If the depth argument is not an integer.</p></li>
+<li><p><strong>ValueError</strong> – If call stack is not deep enough.</p></li>
+</ul>
+</dd>
+</dl>
+<p>This function provides a polyfill for the built-in <cite>sys._getframe</cite> function, which is used to access the call stack
+frames. It allows you to retrieve the frame object at a specific depth in the call stack.</p>
+<p>The depth argument specifies the number of frames to traverse. A value of 0 or less 0 represents the current frame,
+1 represents the caller’s frame, and so on. If the depth is negative, it will traverse the frames in the opposite
+direction.</p>
+<p>If the specified depth is out of range (i.e., greater than the number of frames in the call stack), the function
+raises ValueEror.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">foo</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="n">frame</span> <span class="o">=</span> <span class="n">_getframe</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="p">)</span>  <span class="c1"># Output: bar</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">bar</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="n">foo</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bar</span><span class="p">()</span>
+<span class="go">bar</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="pymagic9.pymagic9._unpack_opargs">
+<span class="sig-prename descclassname"><span class="pre">pymagic9.pymagic9.</span></span><span class="sig-name descname"><span class="pre">_unpack_opargs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pymagic9.pymagic9._unpack_opargs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unpacks the opcodes and their arguments from the given bytecode. Works in Python 2.7 and Python 3.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>code</strong> (<em>bytes</em>) – The bytecode to unpack.</p>
+</dd>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>tuple</em> – A tuple containing the offset, opcode, and argument of each opcode.</p>
+</dd>
+</dl>
+<p>It takes a bytecode object as input and yields a sequence of tuples containing the offset, opcode, and argument of each
+opcode in the bytecode.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="PyMagic9 lib" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Sam Nazarov.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
