@@ -34,7 +34,7 @@ jobs:
                     if file.is_dir():
                         try:
                             version = parse(file.name)
-                            if current_version <= version:
+                            if current_version < version:
                                 set_output('is_new_version_docs', 'false')
                                 exit()
 
