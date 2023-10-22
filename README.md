@@ -3,7 +3,7 @@
 [![license](https://img.shields.io/badge/License-APACHE_2.0-yellow.svg)](http://www.apache.org/licenses/)
 <a><img src="https://img.shields.io/badge/python-2.7 | 3.6 | 3.7 | 3.8 | 3.9 | 3.10 -blue.svg"></a>
 ![Tests](https://github.com/sammnnz/pymagic9/actions/workflows/tests.yml/badge.svg)
-[![codecov](https://codecov.io/gh/sammnnz/pymagic9/branch/release-v0.9.0/graph/badge.svg?token=qQAiKKnctA)](https://codecov.io/gh/sammnnz/pymagic9)
+[![codecov](https://codecov.io/gh/sammnnz/pymagic9/branch/master/graph/badge.svg?token=qQAiKKnctA)](https://codecov.io/gh/sammnnz/pymagic9)
 
 This is a Python library based on calling the stack of frames at runtime and analyzing the code object of frames. Basically, it implements some C# features. For example, it contains the `nameof` function and `auto-implemented properties`. See the [documentation](https://sammnnz.github.io/pymagic9/) for more information.
 
